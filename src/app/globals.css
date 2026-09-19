@@ -1,0 +1,95 @@
+@import "tailwindcss";
+
+/* Design tokens from the SmartDesk handoff. Light-only by design. */
+@theme {
+  --color-page: #eef1fc;
+  --color-surface: #ffffff;
+  --color-surface-alt: #f4f5fa;
+  --color-ink: #12131a;
+  --color-ink-soft: #565a6e;
+  --color-ink-faint: #8e92a8;
+  --color-line: #e3e5f1;
+
+  --color-indigo: #4f46e5;
+  --color-indigo-dark: #3730a3;
+  --color-indigo-soft: #e7e5fb;
+  --color-indigo-muted: #9aa3f5;
+
+  --color-critical: #b3261e;
+  --color-critical-soft: #fbe9e7;
+  --color-high: #b5580a;
+  --color-high-soft: #fceedd;
+  --color-medium: #8a6d00;
+  --color-medium-soft: #fbf1d1;
+  --color-low: #1e7a46;
+  --color-low-soft: #e2f3e8;
+  --color-mint: #0d9488;
+  --color-mint-soft: #ccfbf1;
+
+  /* The internal-notes box is the only place these two appear. */
+  --color-note-bg: #fffbea;
+  --color-note-line: #e6d27a;
+
+  --radius-s: 8px;
+  --radius-m: 14px;
+  --radius-l: 20px;
+
+  --shadow-card: 0 2px 10px rgba(30, 32, 64, 0.06);
+  --shadow-soft: 0 10px 28px rgba(30, 32, 64, 0.09);
+  --shadow-lift: 0 8px 18px rgba(30, 32, 64, 0.1);
+  --shadow-fab: 0 10px 24px rgba(79, 70, 229, 0.35);
+
+  /* The design's type scale, half-pixel sizes and all. */
+  --text-2xs: 11px;
+  --text-2xs--line-height: 1.55;
+  --text-xs: 11.5px;
+  --text-xs--line-height: 1.55;
+  --text-xs2: 12px;
+  --text-xs2--line-height: 1.55;
+  --text-sm: 12.5px;
+  --text-sm--line-height: 1.55;
+  --text-sm2: 13px;
+  --text-sm2--line-height: 1.55;
+  --text-base: 13.5px;
+  --text-base--line-height: 1.55;
+  --text-md: 14px;
+  --text-md--line-height: 1.55;
+  --text-md2: 14.5px;
+  --text-md2--line-height: 1.55;
+  --text-lg: 15px;
+  --text-lg--line-height: 1.55;
+  --text-lg2: 15.5px;
+  --text-lg2--line-height: 1.55;
+  --text-xl: 16px;
+  --text-xl--line-height: 1.4;
+
+  --font-thai: var(--font-noto-sans-thai), "Segoe UI", sans-serif;
+  --font-mono: var(--font-ibm-plex-mono), var(--font-noto-sans-thai), monospace;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--color-page);
+  color: var(--color-ink);
+  font-family: var(--font-thai);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* The design tints the KB search highlight rather than using <mark>'s default. */
+mark {
+  background: #fde68a;
+  color: inherit;
+  padding: 0 2px;
+  border-radius: 2px;
+}
+
+/* Checkboxes in the category filter follow the brand colour. */
+input[type="checkbox"] {
+  accent-color: var(--color-indigo);
+}
