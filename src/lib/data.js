@@ -37,16 +37,25 @@ export const PRIORITY_MATRIX = {'1-1':'low','1-2':'low','1-3':'medium','2-1':'lo
 export const SLA_HOURS = {critical:0.5, high:4, medium:24, low:72};
 export const ASSIGNEES = [{name:'ธนกร วัฒนกิจ',code:'IT-014'},{name:'ปิยะดา ศรีสมบูรณ์',code:'IT-021'},{name:'วรพล เจริญสุข',code:'IT-007'}];
 export const USERS = [
-  {name:'สมหญิง รักงาน', role:'employee', title:'พนักงานฝ่ายการตลาด', code:'EMP-256'},
-  {name:'ธนกร วัฒนกิจ', role:'agent', title:'IT Support', code:'IT-014'},
-  {name:'ปิยะดา ศรีสมบูรณ์', role:'agent', title:'IT Support', code:'IT-021'},
-  {name:'อรรถพล ชัยวัฒน์', role:'admin', title:'หัวหน้าทีม IT', code:'IT-MGR-01'},
+  {name:'สมหญิง รักงาน', role:'employee', title:'พนักงานฝ่ายการตลาด', code:'EMP-256', email:'emp256@smartdesk.co.th', status:'active'},
+  {name:'ธนกร วัฒนกิจ', role:'agent', title:'IT Support', code:'IT-014', email:'it014@smartdesk.co.th', status:'active'},
+  {name:'ปิยะดา ศรีสมบูรณ์', role:'agent', title:'IT Support', code:'IT-021', email:'it021@smartdesk.co.th', status:'active'},
+  {name:'อรรถพล ชัยวัฒน์', role:'admin', title:'หัวหน้าทีม IT', code:'IT-MGR-01', email:'itmgr01@smartdesk.co.th', status:'active'},
+  {name:'วรพล เจริญสุข', role:'agent', title:'IT Support', code:'IT-007', email:'it007@smartdesk.co.th', status:'active'},
 ];
 export const ROLE_META = {employee:{label:'พนักงาน'}, agent:{label:'IT Support'}, admin:{label:'หัวหน้าทีม IT'}};
+/** Role badge colours — the design tints admin pink and agent mint. */
+export const ROLE_BADGE = {
+  employee: 'bg-indigo-soft text-indigo-dark',
+  agent: 'bg-mint-soft text-[#0D6D64]',
+  admin: 'bg-[#FDE3EC] text-[#C22B62]',
+};
+/** Account status. `locked` maps to a non-null `locked_until` in the users table. */
+export const USER_STATUS_META = {active:{label:'ใช้งานอยู่', tone:'low'}, locked:{label:'ถูกล็อก', tone:'critical'}};
 export const NAV = {
   employee:[{v:'kb',label:'คลังความรู้'},{v:'newTicket',label:'แจ้งปัญหา'},{v:'ticketList',label:'ticket ของฉัน'}],
   agent:[{v:'queue',label:'คิวงาน'},{v:'kb',label:'คลังความรู้'}],
-  admin:[{v:'dashboard',label:'แดชบอร์ด'},{v:'queue',label:'ticket ทั้งหมด'},{v:'kb',label:'คลังความรู้'}],
+  admin:[{v:'dashboard',label:'แดชบอร์ด'},{v:'queue',label:'ticket ทั้งหมด'},{v:'kb',label:'คลังความรู้'},{v:'users',label:'จัดการผู้ใช้'}],
 };
 
 export function defaultKB(){

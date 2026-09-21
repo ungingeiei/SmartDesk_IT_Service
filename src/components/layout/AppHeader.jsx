@@ -2,17 +2,10 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { ROLE_META } from '@/lib/data';
+import { ROLE_BADGE, ROLE_META } from '@/lib/data';
 import { navItemsForRole } from '@/lib/nav';
 import { useApp } from '@/lib/store';
 import Pill from '@/components/ui/Pill';
-
-/** Role badge colours — the design tints admin pink and agent mint. */
-const ROLE_BADGE = {
-  employee: 'bg-indigo-soft text-indigo-dark',
-  agent: 'bg-mint-soft text-[#0D6D64]',
-  admin: 'bg-[#FDE3EC] text-[#C22B62]',
-};
 
 export default function AppHeader() {
   const { currentUser, logout } = useApp();

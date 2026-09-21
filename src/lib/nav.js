@@ -8,11 +8,13 @@ export const HREF_BY_VIEW = {
   ticketList: '/tickets',
   queue: '/queue',
   dashboard: '/dashboard',
+  users: '/users',
 };
 
 /** Which roles may open a given path. Used by the authenticated layout's guard. */
 export const ROLES_BY_PREFIX = [
   ['/dashboard', ['admin']],
+  ['/users', ['admin']],
   ['/queue', ['agent', 'admin']],
   ['/tickets', ['employee']],
   ['/kb', ['employee', 'agent', 'admin']],
@@ -45,6 +47,8 @@ export function isActive(pathname, view) {
       return pathname === '/queue' || pathname.startsWith('/queue/');
     case 'dashboard':
       return pathname === '/dashboard';
+    case 'users':
+      return pathname === '/users';
     default:
       return false;
   }
