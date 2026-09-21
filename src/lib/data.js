@@ -37,10 +37,10 @@ export const PRIORITY_MATRIX = {'1-1':'low','1-2':'low','1-3':'medium','2-1':'lo
 export const SLA_HOURS = {critical:0.5, high:4, medium:24, low:72};
 export const ASSIGNEES = [{name:'ธนกร วัฒนกิจ',code:'IT-014'},{name:'ปิยะดา ศรีสมบูรณ์',code:'IT-021'},{name:'วรพล เจริญสุข',code:'IT-007'}];
 export const USERS = [
-  {name:'สมหญิง รักงาน', role:'employee', title:'พนักงานฝ่ายการตลาด', code:'EMP-256'},
-  {name:'ธนกร วัฒนกิจ', role:'agent', title:'IT Support', code:'IT-014'},
-  {name:'ปิยะดา ศรีสมบูรณ์', role:'agent', title:'IT Support', code:'IT-021'},
-  {name:'อรรถพล ชัยวัฒน์', role:'admin', title:'หัวหน้าทีม IT', code:'IT-MGR-01'},
+  {name:'สมหญิง รักงาน', role:'employee', title:'พนักงานฝ่ายการตลาด', code:'EMP-256', username:'somying', password:'1234'},
+  {name:'ธนกร วัฒนกิจ', role:'agent', title:'IT Support', code:'IT-014', username:'thanakorn', password:'1234'},
+  {name:'ปิยะดา ศรีสมบูรณ์', role:'agent', title:'IT Support', code:'IT-021', username:'piyada', password:'1234'},
+  {name:'อรรถพล ชัยวัฒน์', role:'admin', title:'หัวหน้าทีม IT', code:'IT-MGR-01', username:'attapon', password:'1234'},
 ];
 export const ROLE_META = {employee:{label:'พนักงาน'}, agent:{label:'IT Support'}, admin:{label:'หัวหน้าทีม IT'}};
 export const NAV = {

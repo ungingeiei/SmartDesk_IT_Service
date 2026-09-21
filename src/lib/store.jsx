@@ -12,6 +12,7 @@ const AppContext = createContext(null);
 
 const initialState = {
   currentUserIdx: null,
+  users: USERS.map((u) => ({ ...u })),
   kb: defaultKB(),
   tickets: defaultTickets(),
   ticketCounter: 102,
@@ -36,6 +37,14 @@ function reducer(state, action) {
 
     case 'logout':
       return { ...state, currentUserIdx: null };
+
+    case 'resetPassword':
+      return {
+        ...state,
+        users: state.users.map((u, i) =>
+          i === action.idx ? { ...u, password: action.password } : u
+        ),
+      };
 
     case 'toast':
       return { ...state, toastMsg: action.msg };
@@ -87,7 +96,7 @@ export function AppProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const toastTimer = useRef(null);
 
-  const currentUser = state.currentUserIdx == null ? null : USERS[state.currentUserIdx];
+  const currentUser = state.currentUserIdx == null ? null : state.users[state.currentUserIdx];
 
   const showToast = useCallback((msg) => {
     dispatch({ type: 'toast', msg });
@@ -105,6 +114,11 @@ export function AppProvider({ children }) {
 
     return {
       login: (idx) => dispatch({ type: 'login', idx }),
+
+      resetPassword: (idx, password) => {
+        dispatch({ type: 'resetPassword', idx, password });
+        showToast('เปลี่ยนรหัสผ่านเรียบร้อยแล้ว กรุณาเข้าสู่ระบบด้วยรหัสผ่านใหม่');
+      },
 
       logout: () => {
         showToast('ออกจากระบบเรียบร้อยแล้ว');
