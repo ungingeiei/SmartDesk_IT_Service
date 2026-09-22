@@ -33,6 +33,14 @@ export default function UsersPage() {
   const picked = visible.filter((u) => selected.has(u.code));
   const target = dialog?.code ? users.find((u) => u.code === dialog.code) : null;
 
+  // Only offer the action that actually applies to the selection, so there is
+  // never a live button that would do nothing to some or all of the picked rows.
+  const pickedActive = picked.filter((u) => u.status === 'active');
+  const pickedLocked = picked.filter((u) => u.status === 'locked');
+  const canLock = pickedActive.length > 0;
+  const canUnlock = pickedLocked.length > 0;
+  const mixedSelection = canLock && canUnlock;
+
   // Changing what is visible would leave ticks on rows the admin can no longer see.
   function withClearedSelection(setter) {
     return (value) => {
@@ -58,12 +66,17 @@ export default function UsersPage() {
     );
   }
 
-  function bulkStatus(next) {
-    setUsersStatus(
-      picked.map((u) => u.code),
-      next,
-    );
-    setSelected(new Set());
+  function bulkStatus(next, subset) {
+    const codes = subset.map((u) => u.code);
+    setUsersStatus(codes, next);
+    // Deselect only the rows just acted on (e.g. unlocking locks unlocks
+    // 1 of 2 selected) — the untouched ones (and their button) stay selected
+    // for a follow-up click.
+    setSelected((prev) => {
+      const next = new Set(prev);
+      codes.forEach((code) => next.delete(code));
+      return next;
+    });
   }
 
   function exportCsv() {
@@ -147,14 +160,25 @@ export default function UsersPage() {
           aria-label="การดำเนินการกับผู้ใช้ที่เลือก"
           className="mb-3 flex flex-wrap items-center gap-3 rounded-m bg-indigo-soft px-[18px] py-2.5"
         >
-          <span className="text-md font-semibold text-indigo-dark">เลือกแล้ว {picked.length} คน</span>
+          <span className="text-md font-semibold text-indigo-dark">
+            เลือกแล้ว {picked.length} คน
+            {mixedSelection ? ' (ใช้งานอยู่และถูกล็อกปนกัน)' : ''}
+          </span>
           <div className="ml-auto flex flex-wrap gap-2">
-            <Button size="sm" variant="neutral" onClick={() => bulkStatus('locked')}>
-              ล็อกบัญชี
-            </Button>
-            <Button size="sm" variant="neutral" onClick={() => bulkStatus('active')}>
-              ปลดล็อก
-            </Button>
+            {/* Only the action that applies to the selection is shown, so there is
+               never a button that would do nothing — or the wrong thing — to some
+               of the picked rows. A mixed selection gets both, each scoped to just
+               its matching rows and labelled with how many that is. */}
+            {canLock ? (
+              <Button size="sm" variant="neutral" onClick={() => bulkStatus('locked', pickedActive)}>
+                ล็อกบัญชี{mixedSelection ? ` (${pickedActive.length})` : ''}
+              </Button>
+            ) : null}
+            {canUnlock ? (
+              <Button size="sm" variant="neutral" onClick={() => bulkStatus('active', pickedLocked)}>
+                ปลดล็อก{mixedSelection ? ` (${pickedLocked.length})` : ''}
+              </Button>
+            ) : null}
             <Button size="sm" variant="ghost" onClick={() => setSelected(new Set())}>
               ยกเลิกการเลือก
             </Button>
