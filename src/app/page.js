@@ -14,7 +14,7 @@ export default function LoginPage() {
         <LoginForm />
 
         <div className="mt-[22px] text-center text-sm text-ink-faint">
-          โหมดสาธิต — somying / thanakorn / piyada / attapon (รหัสผ่าน: 1234)
+          โหมดสาธิต — emp256 / it014 / it021 / itmgr01 / it007 (รหัสผ่าน: Passw0rd1)
         </div>
       </div>
     </div>

@@ -1,7 +1,6 @@
 'use client';
 
-// Username/password login. There's no backend, so this checks credentials
-// against the mock USERS list and routes by role — see homeHrefForRole().
+// Username/password login against the real users table via /api/auth/login.
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -12,28 +11,39 @@ import { Field, TextInput } from '@/components/ui/Field';
 import ForgotPasswordModal from './ForgotPasswordModal';
 
 export default function LoginForm() {
-  const { users, login } = useApp();
+  const { login } = useApp();
   const router = useRouter();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
   const [forgotOpen, setForgotOpen] = useState(false);
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-
-    const idx = users.findIndex(
-      (u) => u.username.toLowerCase() === username.trim().toLowerCase()
-    );
-
-    if (idx === -1 || users[idx].password !== password) {
-      setError('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
-      return;
-    }
-
     setError('');
-    login(idx);
-    router.push(homeHrefForRole(users[idx].role));
+    setSubmitting(true);
+
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: username.trim(), password }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || 'เข้าสู่ระบบไม่สำเร็จ');
+        return;
+      }
+
+      login(data.user);
+      router.push(homeHrefForRole(data.user.role));
+    } catch {
+      setError('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ กรุณาลองใหม่');
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -47,7 +57,7 @@ export default function LoginForm() {
           <TextInput
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            placeholder="เช่น somying"
+            placeholder="เช่น emp256"
             autoComplete="username"
             autoFocus
           />
@@ -69,8 +79,8 @@ export default function LoginForm() {
           </div>
         )}
 
-        <Button type="submit" className="w-full">
-          เข้าสู่ระบบ
+        <Button type="submit" className="w-full" disabled={submitting}>
+          {submitting ? 'กำลังเข้าสู่ระบบ...' : 'เข้าสู่ระบบ'}
         </Button>
 
         <button

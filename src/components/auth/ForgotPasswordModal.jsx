@@ -1,21 +1,23 @@
 'use client';
 
-// No backend/email exists yet, so this resets the password directly by
-// username instead of the emailed-link flow database/01_schema.sql's
-// password_reset_tokens table is meant for.
+// Self-service reset via /api/auth/reset-password. Identity is proven only by
+// knowing the username, since there's no emailed-link flow yet — see
+// password_reset_tokens in database/01_schema.sql for where that would plug in.
 
 import { useState } from 'react';
 import { useApp } from '@/lib/store';
+import { validatePassword } from '@/lib/users';
 import Button from '@/components/ui/Button';
 import { Field, TextInput } from '@/components/ui/Field';
 import Modal from '@/components/ui/Modal';
 
 export default function ForgotPasswordModal({ open, onClose }) {
-  const { users, resetPassword } = useApp();
+  const { showToast } = useApp();
   const [username, setUsername] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   function handleClose() {
     setUsername('');
@@ -25,19 +27,17 @@ export default function ForgotPasswordModal({ open, onClose }) {
     onClose();
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
+    setError('');
 
-    const idx = users.findIndex(
-      (u) => u.username.toLowerCase() === username.trim().toLowerCase()
-    );
-
-    if (idx === -1) {
-      setError('ไม่พบชื่อผู้ใช้นี้ในระบบ');
+    if (!username.trim()) {
+      setError('กรุณากรอกชื่อผู้ใช้');
       return;
     }
-    if (newPassword.length < 4) {
-      setError('รหัสผ่านใหม่ต้องมีอย่างน้อย 4 ตัวอักษร');
+    const passwordError = validatePassword(newPassword);
+    if (passwordError) {
+      setError(passwordError);
       return;
     }
     if (newPassword !== confirmPassword) {
@@ -45,8 +45,27 @@ export default function ForgotPasswordModal({ open, onClose }) {
       return;
     }
 
-    resetPassword(idx, newPassword);
-    handleClose();
+    setSubmitting(true);
+    try {
+      const res = await fetch('/api/auth/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: username.trim(), newPassword }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || 'เปลี่ยนรหัสผ่านไม่สำเร็จ');
+        return;
+      }
+
+      showToast('เปลี่ยนรหัสผ่านเรียบร้อยแล้ว กรุณาเข้าสู่ระบบด้วยรหัสผ่านใหม่');
+      handleClose();
+    } catch {
+      setError('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ กรุณาลองใหม่');
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -56,7 +75,7 @@ export default function ForgotPasswordModal({ open, onClose }) {
           <TextInput
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            placeholder="เช่น somying"
+            placeholder="เช่น emp256"
             autoComplete="username"
             autoFocus
           />
@@ -67,7 +86,7 @@ export default function ForgotPasswordModal({ open, onClose }) {
             type="password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
-            placeholder="••••••••"
+            placeholder="อย่างน้อย 8 ตัว มีทั้งตัวอักษรและตัวเลข"
             autoComplete="new-password"
           />
         </Field>
@@ -92,7 +111,9 @@ export default function ForgotPasswordModal({ open, onClose }) {
           <Button type="button" variant="ghost" onClick={handleClose}>
             ยกเลิก
           </Button>
-          <Button type="submit">บันทึกรหัสผ่านใหม่</Button>
+          <Button type="submit" disabled={submitting}>
+            {submitting ? 'กำลังบันทึก...' : 'บันทึกรหัสผ่านใหม่'}
+          </Button>
         </div>
       </form>
     </Modal>

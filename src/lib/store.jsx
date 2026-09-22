@@ -6,12 +6,13 @@
 
 import { createContext, useCallback, useContext, useMemo, useReducer, useRef } from 'react';
 import { ASSIGNEES, USERS, defaultKB, defaultTickets } from './data';
+import { usernameFromCode } from './users';
 import { calcPriority, formatThaiDateTime, formatThaiTime, guessAiSuggestion, guessCategory } from './logic';
 
 const AppContext = createContext(null);
 
 const initialState = {
-  currentUserIdx: null,
+  currentUser: null,
   users: USERS.map((u) => ({ ...u })),
   kb: defaultKB(),
   tickets: defaultTickets(),
@@ -33,21 +34,29 @@ function patchArticle(kb, id, patch) {
 function reducer(state, action) {
   switch (action.type) {
     case 'login':
-      return { ...state, currentUserIdx: action.idx };
+      return { ...state, currentUser: action.user };
 
     case 'logout':
-      return { ...state, currentUserIdx: null };
-
-    case 'resetPassword':
-      return {
-        ...state,
-        users: state.users.map((u, i) =>
-          i === action.idx ? { ...u, password: action.password } : u
-        ),
-      };
+      return { ...state, currentUser: null };
 
     case 'toast':
       return { ...state, toastMsg: action.msg };
+
+    case 'addUser':
+      return { ...state, users: [...state.users, action.user] };
+
+    case 'patchUsers': {
+      // The signed-in admin can never change their own role or lock themselves out.
+      const selfCode = state.currentUser?.code;
+      return {
+        ...state,
+        users: state.users.map((u) => {
+          if (!action.codes.includes(u.code)) return u;
+          const patch = u.code === selfCode ? { ...action.patch, role: u.role, status: u.status } : action.patch;
+          return { ...u, ...patch };
+        }),
+      };
+    }
 
     case 'setFeedback':
       return {
@@ -96,8 +105,6 @@ export function AppProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const toastTimer = useRef(null);
 
-  const currentUser = state.currentUserIdx == null ? null : state.users[state.currentUserIdx];
-
   const showToast = useCallback((msg) => {
     dispatch({ type: 'toast', msg });
     clearTimeout(toastTimer.current);
@@ -109,21 +116,49 @@ export function AppProvider({ children }) {
     /** Assignee record for the signed-in agent, matched by name as the design does. */
     const meAsAssignee = (user) => ({
       name: user.name,
-      code: (ASSIGNEES.find((a) => a.name === user.name) || {}).code || '—',
+      code: user.code || (ASSIGNEES.find((a) => a.name === user.name) || {}).code || '—',
     });
 
     return {
-      login: (idx) => dispatch({ type: 'login', idx }),
-
-      resetPassword: (idx, password) => {
-        dispatch({ type: 'resetPassword', idx, password });
-        showToast('เปลี่ยนรหัสผ่านเรียบร้อยแล้ว กรุณาเข้าสู่ระบบด้วยรหัสผ่านใหม่');
-      },
+      /** `user` is whatever /api/auth/login returned — no pwd_hash included. */
+      login: (user) => dispatch({ type: 'login', user }),
 
       logout: () => {
         showToast('ออกจากระบบเรียบร้อยแล้ว');
         dispatch({ type: 'logout' });
       },
+
+      addUser: ({ code, name, email, title, role }) => {
+        dispatch({
+          type: 'addUser',
+          user: {
+            code: code.trim(),
+            name: name.trim(),
+            username: usernameFromCode(code),
+            email: email.trim().toLowerCase(),
+            title: title.trim(),
+            role,
+            status: 'active',
+          },
+        });
+        showToast(`เพิ่มผู้ใช้ ${name.trim()} เรียบร้อยแล้ว`);
+      },
+
+      updateUser: (code, patch) => {
+        dispatch({ type: 'patchUsers', codes: [code], patch });
+        showToast('บันทึกข้อมูลผู้ใช้เรียบร้อยแล้ว');
+      },
+
+      setUsersStatus: (codes, status) => {
+        dispatch({ type: 'patchUsers', codes, patch: { status } });
+        showToast(status === 'locked' ? `ล็อกบัญชี ${codes.length} รายการแล้ว` : `ปลดล็อกบัญชี ${codes.length} รายการแล้ว`);
+      },
+
+      /**
+       * Frontend stub: the password itself is deliberately not kept in state. The real
+       * implementation must send it to the API, which hashes it before it reaches `pwd_hash`.
+       */
+      resetPassword: (user) => showToast(`ตั้งรหัสผ่านใหม่ให้ ${user.name} เรียบร้อยแล้ว`),
 
       setFeedback: (articleId, choice) => dispatch({ type: 'setFeedback', articleId, choice }),
 
@@ -312,7 +347,7 @@ export function AppProvider({ children }) {
     };
   }, [showToast]);
 
-  const value = useMemo(() => ({ ...state, currentUser, ...actions }), [state, currentUser, actions]);
+  const value = useMemo(() => ({ ...state, ...actions }), [state, actions]);
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
