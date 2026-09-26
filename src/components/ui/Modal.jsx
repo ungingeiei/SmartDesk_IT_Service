@@ -1,38 +1,47 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+// Generic centred dialog: backdrop click, the Escape key and the ✕ button all close it.
 
-/**
- * Dialog built on the native <dialog> element, so the browser supplies the focus
- * trap, Esc-to-close and inert background. Mount it only while it is open —
- * form state inside then resets on every open without any effect.
- */
-export default function Modal({ title, onClose, children, className = '' }) {
-  const ref = useRef(null);
+import { useEffect } from 'react';
 
+export default function Modal({ open, onClose, title, children }) {
   useEffect(() => {
-    const dialog = ref.current;
-    if (dialog && !dialog.open) dialog.showModal();
-  }, []);
+    if (!open) return;
+    function handleKeyDown(e) {
+      if (e.key === 'Escape') onClose();
+    }
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [open, onClose]);
+
+  if (!open) return null;
 
   return (
-    <dialog
-      ref={ref}
-      aria-labelledby="modal-title"
-      onClose={onClose}
-      // A click that lands on the <dialog> itself (not its content) hit the backdrop.
-      onClick={(e) => {
-        if (e.target === ref.current) onClose();
-      }}
-      className={`m-auto w-[calc(100%-32px)] max-w-[520px] rounded-l border border-line bg-surface
-        p-0 text-ink shadow-soft backdrop:bg-ink/40 ${className}`}
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-6"
+      onClick={onClose}
     >
-      <div className="max-h-[calc(100vh-64px)] overflow-y-auto px-[30px] py-7 max-[600px]:px-[18px]">
-        <h2 id="modal-title" className="mb-5 text-[20px] font-extrabold tracking-[-0.01em]">
-          {title}
-        </h2>
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
+        className="w-full max-w-[420px] rounded-m border border-line bg-surface p-6 shadow-soft"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="mb-4 flex items-center justify-between">
+          {title && <h2 className="text-lg font-bold text-ink">{title}</h2>}
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="ปิด"
+            className="ml-auto flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center
+              rounded-full text-ink-faint transition hover:bg-surface-alt hover:text-ink"
+          >
+            ✕
+          </button>
+        </div>
         {children}
       </div>
-    </dialog>
+    </div>
   );
 }

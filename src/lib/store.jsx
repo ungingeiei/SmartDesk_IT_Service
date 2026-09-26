@@ -12,9 +12,8 @@ import { calcPriority, formatThaiDateTime, formatThaiTime, guessAiSuggestion, gu
 const AppContext = createContext(null);
 
 const initialState = {
-  currentUserIdx: null,
-  // Editable copy of the seed users. Only ever appended to, so `currentUserIdx` stays valid.
-  users: USERS,
+  currentUser: null,
+  users: USERS.map((u) => ({ ...u })),
   kb: defaultKB(),
   tickets: defaultTickets(),
   ticketCounter: 102,
@@ -35,10 +34,10 @@ function patchArticle(kb, id, patch) {
 function reducer(state, action) {
   switch (action.type) {
     case 'login':
-      return { ...state, currentUserIdx: action.idx };
+      return { ...state, currentUser: action.user };
 
     case 'logout':
-      return { ...state, currentUserIdx: null };
+      return { ...state, currentUser: null };
 
     case 'toast':
       return { ...state, toastMsg: action.msg };
@@ -48,7 +47,7 @@ function reducer(state, action) {
 
     case 'patchUsers': {
       // The signed-in admin can never change their own role or lock themselves out.
-      const selfCode = state.users[state.currentUserIdx]?.code;
+      const selfCode = state.currentUser?.code;
       return {
         ...state,
         users: state.users.map((u) => {
@@ -106,8 +105,6 @@ export function AppProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const toastTimer = useRef(null);
 
-  const currentUser = state.currentUserIdx == null ? null : state.users[state.currentUserIdx];
-
   const showToast = useCallback((msg) => {
     dispatch({ type: 'toast', msg });
     clearTimeout(toastTimer.current);
@@ -123,7 +120,8 @@ export function AppProvider({ children }) {
     });
 
     return {
-      login: (idx) => dispatch({ type: 'login', idx }),
+      /** `user` is whatever /api/auth/login returned — no pwd_hash included. */
+      login: (user) => dispatch({ type: 'login', user }),
 
       logout: () => {
         showToast('ออกจากระบบเรียบร้อยแล้ว');
@@ -349,7 +347,7 @@ export function AppProvider({ children }) {
     };
   }, [showToast]);
 
-  const value = useMemo(() => ({ ...state, currentUser, ...actions }), [state, currentUser, actions]);
+  const value = useMemo(() => ({ ...state, ...actions }), [state, actions]);
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
