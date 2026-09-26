@@ -1,0 +1,232 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model categories {
+  id           Int           @id @default(autoincrement())
+  name         String        @unique @db.VarChar(100)
+  bg_color     String?       @db.VarChar(20)
+  accent_color String?       @db.VarChar(20)
+  kb_articles  kb_articles[]
+  tickets      tickets[]
+}
+
+model impact_levels {
+  id              Int               @id @db.SmallInt
+  label           String            @db.VarChar(100)
+  priority_matrix priority_matrix[]
+  tickets         tickets[]
+}
+
+model kb_article_tags {
+  kb_id       Int
+  tag_id      Int
+  kb_articles kb_articles @relation(fields: [kb_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tags        tags        @relation(fields: [tag_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([kb_id, tag_id])
+}
+
+model kb_articles {
+  id                                              Int               @id @default(autoincrement())
+  category_id                                     Int
+  title                                           String            @db.VarChar(255)
+  summary                                         String?           @db.VarChar(255)
+  views                                           Int               @default(0)
+  source_ticket_id                                Int?              @unique
+  created_at                                      DateTime          @default(now()) @db.Timestamptz(6)
+  updated_at                                      DateTime          @default(now()) @db.Timestamptz(6)
+  kb_article_tags                                 kb_article_tags[]
+  categories                                      categories        @relation(fields: [category_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tickets_kb_articles_source_ticket_idTotickets   tickets?          @relation("kb_articles_source_ticket_idTotickets", fields: [source_ticket_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  kb_comments                                     kb_comments[]
+  kb_deflections                                  kb_deflections[]
+  kb_feedback                                     kb_feedback[]
+  kb_steps                                        kb_steps[]
+  tickets_tickets_ai_suggested_kb_idTokb_articles tickets[]         @relation("tickets_ai_suggested_kb_idTokb_articles")
+}
+
+model kb_comments {
+  id          Int         @id @default(autoincrement())
+  kb_id       Int
+  author_id   Int?
+  author_name String      @db.VarChar(255)
+  comment     String
+  votes       Int         @default(0)
+  is_accepted Boolean     @default(false)
+  created_at  DateTime    @default(now()) @db.Timestamptz(6)
+  users       users?      @relation(fields: [author_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  kb_articles kb_articles @relation(fields: [kb_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model kb_deflections {
+  id          Int          @id @default(autoincrement())
+  kb_id       Int?
+  user_id     Int?
+  occurred_at DateTime     @default(now()) @db.Timestamptz(6)
+  kb_articles kb_articles? @relation(fields: [kb_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users       users?       @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model kb_feedback {
+  id          Int         @id @default(autoincrement())
+  kb_id       Int
+  user_id     Int
+  is_helpful  Boolean
+  created_at  DateTime    @default(now()) @db.Timestamptz(6)
+  kb_articles kb_articles @relation(fields: [kb_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users       users       @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([kb_id, user_id])
+}
+
+model kb_steps {
+  id          Int         @id @default(autoincrement())
+  kb_id       Int
+  step_no     Int         @db.SmallInt
+  content     String
+  kb_articles kb_articles @relation(fields: [kb_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([kb_id, step_no])
+}
+
+model password_reset_tokens {
+  id           Int       @id @default(autoincrement())
+  user_id      Int
+  token_hash   String    @unique @db.VarChar(255)
+  requested_at DateTime  @default(now()) @db.Timestamptz(6)
+  expires_at   DateTime  @db.Timestamptz(6)
+  used_at      DateTime? @db.Timestamptz(6)
+  users        users     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model priority_matrix {
+  impact_id      Int                  @db.SmallInt
+  urgency_id     Int                  @db.SmallInt
+  priority       ticket_priority_enum
+  impact_levels  impact_levels        @relation(fields: [impact_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  urgency_levels urgency_levels       @relation(fields: [urgency_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([impact_id, urgency_id])
+}
+
+model sla_policies {
+  priority             ticket_priority_enum @id
+  resolve_within_hours Decimal              @db.Decimal(6, 2)
+}
+
+model tags {
+  id              Int               @id @default(autoincrement())
+  tag             String            @unique @db.VarChar(100)
+  kb_article_tags kb_article_tags[]
+}
+
+model ticket_internal_notes {
+  id         Int      @id @default(autoincrement())
+  ticket_id  Int
+  author_id  Int
+  note       String
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  users      users    @relation(fields: [author_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tickets    tickets  @relation(fields: [ticket_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model ticket_messages {
+  id        Int      @id @default(autoincrement())
+  ticket_id Int
+  sender_id Int
+  is_staff  Boolean
+  message   String
+  sent_at   DateTime @default(now()) @db.Timestamptz(6)
+  users     users    @relation(fields: [sender_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tickets   tickets  @relation(fields: [ticket_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model tickets {
+  id                                                  Int                     @id @default(autoincrement())
+  ticket_no                                           String                  @unique @db.VarChar(20)
+  title                                               String                  @db.VarChar(255)
+  description                                         String
+  impact_id                                           Int                     @db.SmallInt
+  urgency_id                                          Int                     @db.SmallInt
+  priority                                            ticket_priority_enum
+  status                                              ticket_status_enum      @default(new)
+  category_id                                         Int
+  reporter_id                                         Int
+  assignee_id                                         Int?
+  created_at                                          DateTime                @default(now()) @db.Timestamptz(6)
+  resolution_summary                                  String?
+  resolved_at                                         DateTime?               @db.Timestamptz(6)
+  csat_score                                          Int?                    @db.SmallInt
+  confirmed_by_reporter                               Boolean                 @default(false)
+  reopened_count                                      Int                     @default(0) @db.SmallInt
+  ai_suggested_kb_id                                  Int?
+  ai_confidence                                       Int?                    @db.SmallInt
+  kb_articles_kb_articles_source_ticket_idTotickets   kb_articles?            @relation("kb_articles_source_ticket_idTotickets")
+  ticket_internal_notes                               ticket_internal_notes[]
+  ticket_messages                                     ticket_messages[]
+  kb_articles_tickets_ai_suggested_kb_idTokb_articles kb_articles?            @relation("tickets_ai_suggested_kb_idTokb_articles", fields: [ai_suggested_kb_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users_tickets_assignee_idTousers                    users?                  @relation("tickets_assignee_idTousers", fields: [assignee_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  categories                                          categories              @relation(fields: [category_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  impact_levels                                       impact_levels           @relation(fields: [impact_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users_tickets_reporter_idTousers                    users                   @relation("tickets_reporter_idTousers", fields: [reporter_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  urgency_levels                                      urgency_levels          @relation(fields: [urgency_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model urgency_levels {
+  id              Int               @id @db.SmallInt
+  label           String            @db.VarChar(100)
+  priority_matrix priority_matrix[]
+  tickets         tickets[]
+}
+
+model users {
+  id                                 Int                     @id @default(autoincrement())
+  employee_code                      String                  @unique @db.VarChar(20)
+  name                               String                  @db.VarChar(255)
+  username                           String                  @unique @db.VarChar(50)
+  email                              String                  @unique @db.VarChar(255)
+  pwd_hash                           String                  @db.VarChar(255)
+  role                               user_role_enum
+  title                              String?                 @db.VarChar(255)
+  failed_login_attempts              Int                     @default(0) @db.SmallInt
+  locked_until                       DateTime?               @db.Timestamptz(6)
+  last_login_at                      DateTime?               @db.Timestamptz(6)
+  created_at                         DateTime                @default(now()) @db.Timestamptz(6)
+  kb_comments                        kb_comments[]
+  kb_deflections                     kb_deflections[]
+  kb_feedback                        kb_feedback[]
+  password_reset_tokens              password_reset_tokens[]
+  ticket_internal_notes              ticket_internal_notes[]
+  ticket_messages                    ticket_messages[]
+  tickets_tickets_assignee_idTousers tickets[]               @relation("tickets_assignee_idTousers")
+  tickets_tickets_reporter_idTousers tickets[]               @relation("tickets_reporter_idTousers")
+}
+
+enum ticket_priority_enum {
+  critical
+  high
+  medium
+  low
+}
+
+enum ticket_status_enum {
+  new
+  in_progress
+  pending
+  resolved
+  closed
+}
+
+enum user_role_enum {
+  employee
+  agent
+  admin
+}

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import pool from '@/lib/db';
+import prisma from '@/lib/prisma';
 import { hashPassword } from '@/lib/auth';
 
 // Self-service "forgot password" — identity is proven only by knowing the
@@ -12,18 +12,19 @@ export async function POST(req) {
     return NextResponse.json({ error: 'ข้อมูลไม่ครบถ้วน' }, { status: 400 });
   }
 
-  const existing = await pool.query('SELECT "id" FROM "users" WHERE "username" = $1', [
-    username.trim().toLowerCase(),
-  ]);
-  if (existing.rows.length === 0) {
+  const existing = await prisma.users.findUnique({
+    where: { username: username.trim().toLowerCase() },
+    select: { id: true },
+  });
+  if (!existing) {
     return NextResponse.json({ error: 'ไม่พบชื่อผู้ใช้นี้ในระบบ' }, { status: 404 });
   }
 
   const pwdHash = await hashPassword(newPassword);
-  await pool.query('UPDATE "users" SET "pwd_hash" = $1 WHERE "id" = $2', [
-    pwdHash,
-    existing.rows[0].id,
-  ]);
+  await prisma.users.update({
+    where: { id: existing.id },
+    data: { pwd_hash: pwdHash },
+  });
 
   return NextResponse.json({ ok: true });
 }
