@@ -88,10 +88,10 @@ export function formatThaiTime(date) {
   return date.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
 }
 
-/** "2 ก.ย. 2569" — date-only Thai format, used for KB article/comment timestamps. */
-export function formatThaiDate(date) {
-  return date.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' });
-}
+// /** "2 ก.ย. 2569" — date-only Thai format, used for KB article/comment timestamps. */
+// export function formatThaiDate(date) {
+//   return date.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' });
+// }
 
 /** Background + accent colours for an article banner, keyed by category. */
 export function bannerTheme(cat) {
