@@ -44,12 +44,21 @@ export async function PUT(req) {
     return NextResponse.json({ error: 'ไม่พบหมวดหมู่นี้' }, { status: 400 });
   }
 
+  // One line per step. A typed "1." / "2)" prefix is dropped because the
+  // article page numbers the steps itself.
+  const steps = step
+    .split('\n')
+    .map((line) => line.trim().replace(/^\d+\s*[.)]\s*/, ''))
+    .filter(Boolean);
+
   const created = await prisma.kb_articles.create({
     data: {
       category_id: category.id,
       title: title.trim(),
-      summary: step.trim().slice(0, 255),
-      kb_steps: { create: [{ step_no: 1, content: step.trim() }] },
+      summary: steps[0].slice(0, 255),
+      kb_steps: {
+        create: steps.map((content, i) => ({ step_no: i + 1, content })),
+      },
     },
     include: KB_ARTICLE_INCLUDE,
   });

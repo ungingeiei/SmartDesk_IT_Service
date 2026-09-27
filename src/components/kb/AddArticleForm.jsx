@@ -42,7 +42,7 @@ export default function AddArticleForm({ onSave, onCancel }) {
       <textarea
         value={step}
         onChange={(e) => setStep(e.target.value)}
-        placeholder="วิธีแก้ไข (พิมพ์เป็นขั้นตอนแรก)"
+        placeholder="วิธีแก้ไข (ขึ้นบรรทัดใหม่สำหรับแต่ละขั้นตอน)"
         className={`${CONTROL} mb-2.5 min-h-[60px] w-full resize-y`}
       />
       <div className="flex justify-end gap-2">

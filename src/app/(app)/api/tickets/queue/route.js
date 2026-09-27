@@ -8,7 +8,15 @@ import { TICKET_INCLUDE, mapTicket } from '@/lib/serialize';
 // (Admins land on the same route for their read-only "ticket ทั้งหมด" view.)
 export async function POST(req) {
   await req.json().catch(() => ({}));
+  return listQueue();
+}
 
+// GET — what store.jsx actually calls (`fetch('/api/tickets/queue')`).
+export async function GET() {
+  return listQueue();
+}
+
+async function listQueue() {
   const rows = await prisma.tickets.findMany({
     include: TICKET_INCLUDE,
     orderBy: { created_at: 'desc' },
