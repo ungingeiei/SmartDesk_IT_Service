@@ -5,9 +5,8 @@
 // search boxes, form fields and filters stay local to their page.
 
 import { createContext, useCallback, useContext, useMemo, useReducer, useRef } from 'react';
-import { ASSIGNEES, USERS } from './data';
+import { USERS } from './data';
 import { usernameFromCode } from './users';
-import { formatThaiTime } from './logic';
 
 const AppContext = createContext(null);
 
@@ -23,15 +22,18 @@ const initialState = {
   toastMsg: null,
 };
 
-async function postJSON(url, body) {
+async function apiRequest(method, url, body) {
   const res = await fetch(url, {
-    method: 'POST',
+    method,
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body ?? {}),
   });
   const data = await res.json().catch(() => ({}));
   return { ok: res.ok, data };
 }
+const postJSON = (url, body) => apiRequest('POST', url, body);
+const putJSON = (url, body) => apiRequest('PUT', url, body);
+const patchJSON = (url, body) => apiRequest('PATCH', url, body);
 
 /** คลังความรู้ — same list for every role, so this always runs after login. */
 async function loadKB(dispatch) {
@@ -51,15 +53,6 @@ async function loadTickets(dispatch, user) {
     isEmployee ? { reporterId: user.id } : undefined,
   );
   if (ok) dispatch({ type: 'setTickets', tickets: data.tickets });
-}
-
-/** Apply `patch` to one ticket, leaving the rest of the list untouched. */
-function patchTicket(tickets, id, patch) {
-  return tickets.map((t) => (t.id === id ? { ...t, ...patch(t) } : t));
-}
-
-function patchArticle(kb, id, patch) {
-  return kb.map((a) => (a.id === id ? { ...a, ...patch(a) } : a));
 }
 
 function reducer(state, action) {
@@ -104,27 +97,22 @@ function reducer(state, action) {
     case 'addArticle':
       return { ...state, kb: [action.article, ...state.kb] };
 
-    case 'addComment':
-      return {
-        ...state,
-        kb: patchArticle(state.kb, action.articleId, (a) => ({
-          comments: [...a.comments, action.comment],
-        })),
-      };
-
-    case 'acceptComment':
-      return {
-        ...state,
-        kb: patchArticle(state.kb, action.articleId, (a) => ({
-          comments: a.comments.map((c, i) => ({ ...c, accepted: i === action.index })),
-        })),
-      };
+    // Every KB mutation past creation (comments, accepting one) round-trips
+    // through the API and comes back as the whole article, freshly mapped —
+    // simplest way to stay in sync with whatever the server actually did.
+    case 'setArticle':
+      return { ...state, kb: state.kb.map((a) => (a.id === action.article.id ? action.article : a)) };
 
     case 'addTicket':
       return { ...state, tickets: [action.ticket, ...state.tickets] };
 
-    case 'patchTicket':
-      return { ...state, tickets: patchTicket(state.tickets, action.id, action.patch) };
+    // Same idea as setArticle, for every ticket-detail action (claim,
+    // resolve, chat, notes, confirm, csat) — see api/tickets/[ticketNo].
+    case 'setTicketRow':
+      return {
+        ...state,
+        tickets: state.tickets.map((t) => (t.id === action.ticket.id ? action.ticket : t)),
+      };
 
     case 'incrementDeflected':
       return { ...state, deflectedCount: state.deflectedCount + 1 };
@@ -146,12 +134,6 @@ export function AppProvider({ children }) {
 
   // Actions mirror the design's component methods one for one.
   const actions = useMemo(() => {
-    /** Assignee record for the signed-in agent, matched by name as the design does. */
-    const meAsAssignee = (user) => ({
-      name: user.name,
-      code: user.code || (ASSIGNEES.find((a) => a.name === user.name) || {}).code || '—',
-    });
-
     return {
       /**
        * `user` is whatever /api/auth/login returned — no pwd_hash included.
@@ -205,34 +187,36 @@ export function AppProvider({ children }) {
 
       incrementDeflected: () => dispatch({ type: 'incrementDeflected' }),
 
-      addArticle: ({ title, cat, step }) => {
-        dispatch({
-          type: 'addArticle',
-          article: {
-            id: 'kb' + Date.now(),
-            cat,
-            title,
-            summary: step.slice(0, 60),
-            updated: 'วันนี้',
-            views: 0,
-            tags: [title.toLowerCase()],
-            steps: [step],
-            comments: [],
-          },
-        });
+      // PUT /api/kb creates the row for real, so a refresh no longer loses it.
+      addArticle: async ({ title, cat, step }) => {
+        const { ok, data } = await putJSON('/api/kb', { title, cat, step });
+        if (!ok) {
+          showToast(data.error || 'เพิ่มบทความไม่สำเร็จ กรุณาลองใหม่');
+          return;
+        }
+        dispatch({ type: 'addArticle', article: data.article });
         showToast('เพิ่มบทความเรียบร้อยแล้ว');
       },
 
-      addComment: (articleId, user, txt) =>
-        dispatch({
-          type: 'addComment',
-          articleId,
-          comment: { who: user.name, when: 'วันนี้', txt, votes: 0, accepted: false },
-        }),
+      addComment: async (articleId, user, txt) => {
+        const { ok, data } = await patchJSON(`/api/kb/${articleId}`, {
+          action: 'addComment',
+          authorName: user.name,
+          text: txt,
+        });
+        if (ok) dispatch({ type: 'setArticle', article: data.article });
+        else showToast(data.error || 'ส่งความคิดเห็นไม่สำเร็จ กรุณาลองใหม่');
+      },
 
-      acceptComment: (articleId, index) => {
-        dispatch({ type: 'acceptComment', articleId, index });
-        showToast('ทำเครื่องหมายคำตอบนี้ว่าดีที่สุดแล้ว');
+      acceptComment: async (articleId, index) => {
+        const { ok, data } = await patchJSON(`/api/kb/${articleId}`, {
+          action: 'acceptComment',
+          index,
+        });
+        if (ok) {
+          dispatch({ type: 'setArticle', article: data.article });
+          showToast('ทำเครื่องหมายคำตอบนี้ว่าดีที่สุดแล้ว');
+        }
       },
 
       /**
@@ -257,122 +241,91 @@ export function AppProvider({ children }) {
         return data.ticket.id;
       },
 
-      claimTicket: (id, user, message) => {
-        dispatch({
-          type: 'patchTicket',
-          id,
-          patch: (t) => ({
-            assignee: meAsAssignee(user),
-            status: t.status === 'new' ? 'in_progress' : t.status,
-          }),
-        });
-        showToast(message ?? `รับเรื่อง ${id} เรียบร้อยแล้ว`);
+      // Everything below goes through PATCH /api/tickets/:ticketNo — see
+      // that route for what each action does server-side. All of them
+      // replace the ticket in state with the fresh copy the server returns,
+      // so what's on screen always matches the database.
+      claimTicket: async (id, user, message) => {
+        const { ok, data } = await patchJSON(`/api/tickets/${id}`, { action: 'claim', userId: user.id });
+        if (ok) {
+          dispatch({ type: 'setTicketRow', ticket: data.ticket });
+          showToast(message ?? `รับเรื่อง ${id} เรียบร้อยแล้ว`);
+        } else {
+          showToast(data.error || 'รับเรื่องไม่สำเร็จ กรุณาลองใหม่');
+        }
       },
 
-      setTicketStatus: (id, status) =>
-        dispatch({ type: 'patchTicket', id, patch: () => ({ status }) }),
-
-      reopenTicket: (id) =>
-        dispatch({
-          type: 'patchTicket',
-          id,
-          patch: (t) => ({
-            status: 'in_progress',
-            reopenedCount: (t.reopenedCount || 0) + 1,
-            confirmed: false,
-          }),
-        }),
-
-      resolveTicket: (id, user, summary) => {
-        const when = formatThaiTime(new Date());
-        dispatch({
-          type: 'patchTicket',
-          id,
-          patch: (t) => ({
-            resolutionSummary: summary,
-            status: 'resolved',
-            resolvedAt: Date.now(),
-            chat: [
-              ...t.chat,
-              {
-                who: user.name,
-                staff: true,
-                when,
-                txt: `แก้ไขปัญหาเรียบร้อยแล้วครับ/ค่ะ สรุป: ${summary}`,
-              },
-            ],
-          }),
-        });
-        showToast('บันทึกการแก้ไขแล้ว รอผู้ใช้ยืนยัน');
+      setTicketStatus: async (id, status) => {
+        const { ok, data } = await patchJSON(`/api/tickets/${id}`, { action: 'setStatus', status });
+        if (ok) dispatch({ type: 'setTicketRow', ticket: data.ticket });
       },
 
-      addInternalNote: (id, user, txt) =>
-        dispatch({
-          type: 'patchTicket',
-          id,
-          patch: (t) => ({
-            internalNotes: [
-              ...t.internalNotes,
-              { who: user.name, when: formatThaiTime(new Date()), txt },
-            ],
-          }),
-        }),
+      reopenTicket: async (id) => {
+        const { ok, data } = await patchJSON(`/api/tickets/${id}`, { action: 'reopen' });
+        if (ok) {
+          dispatch({ type: 'setTicketRow', ticket: data.ticket });
+          showToast('เปิดเรื่องนี้อีกครั้งให้ทีม IT ดูต่อแล้ว');
+        }
+      },
 
-      sendChat: (id, user, txt, staff) =>
-        dispatch({
-          type: 'patchTicket',
-          id,
-          patch: (t) => ({
-            chat: [
-              ...t.chat,
-              { who: user.name, staff, when: formatThaiTime(new Date()), txt },
-            ],
-          }),
-        }),
+      resolveTicket: async (id, user, summary) => {
+        const { ok, data } = await patchJSON(`/api/tickets/${id}`, {
+          action: 'resolve',
+          userId: user.id,
+          summary,
+        });
+        if (ok) {
+          dispatch({ type: 'setTicketRow', ticket: data.ticket });
+          showToast('บันทึกการแก้ไขแล้ว รอผู้ใช้ยืนยัน');
+        } else {
+          showToast(data.error || 'บันทึกไม่สำเร็จ กรุณาลองใหม่');
+        }
+      },
+
+      addInternalNote: async (id, user, txt) => {
+        const { ok, data } = await patchJSON(`/api/tickets/${id}`, {
+          action: 'addInternalNote',
+          userId: user.id,
+          text: txt,
+        });
+        if (ok) dispatch({ type: 'setTicketRow', ticket: data.ticket });
+      },
+
+      sendChat: async (id, user, txt, staff) => {
+        const { ok, data } = await patchJSON(`/api/tickets/${id}`, {
+          action: 'sendChat',
+          userId: user.id,
+          text: txt,
+          staff,
+        });
+        if (ok) dispatch({ type: 'setTicketRow', ticket: data.ticket });
+      },
 
       /**
-       * The reporter confirms the fix. This closes the ticket and, as in the
-       * design, folds its resolution summary into a new knowledge-base article.
+       * The reporter confirms the fix. Closes the ticket and, server-side,
+       * folds its resolution summary into a new knowledge-base article
+       * (kb_articles.source_ticket_id) — same as the design describes.
        */
-      confirmFixedYes: (ticket, kb) => {
-        dispatch({
-          type: 'patchTicket',
-          id: ticket.id,
-          patch: () => ({ status: 'closed', confirmed: true }),
-        });
-        if (ticket.resolutionSummary && !kb.some((k) => k.fromTicket === ticket.id)) {
-          dispatch({
-            type: 'addArticle',
-            article: {
-              id: 'kb-auto-' + ticket.id,
-              cat: ticket.cat,
-              title: `วิธีแก้: ${ticket.title}`,
-              summary: ticket.resolutionSummary.slice(0, 70),
-              updated: 'วันนี้',
-              views: 0,
-              tags: [ticket.title.toLowerCase()],
-              steps: [ticket.resolutionSummary],
-              comments: [],
-              fromTicket: ticket.id,
-            },
-          });
+      confirmFixedYes: async (ticket) => {
+        const { ok, data } = await patchJSON(`/api/tickets/${ticket.id}`, { action: 'confirmYes' });
+        if (ok) {
+          dispatch({ type: 'setTicketRow', ticket: data.ticket });
+          showToast('ปิดงานเรียบร้อย ขอบคุณสำหรับการยืนยัน');
         }
-        showToast('ปิดงานเรียบร้อย ขอบคุณสำหรับการยืนยัน');
       },
 
-      confirmFixedNo: (id) => {
-        dispatch({
-          type: 'patchTicket',
-          id,
-          patch: (t) => ({
-            status: 'in_progress',
-            reopenedCount: (t.reopenedCount || 0) + 1,
-          }),
-        });
-        showToast('เปิดเรื่องนี้อีกครั้งให้ทีม IT ดูต่อแล้ว');
+      confirmFixedNo: async (id) => {
+        const { ok, data } = await patchJSON(`/api/tickets/${id}`, { action: 'confirmNo' });
+        if (ok) {
+          dispatch({ type: 'setTicketRow', ticket: data.ticket });
+          showToast('เปิดเรื่องนี้อีกครั้งให้ทีม IT ดูต่อแล้ว');
+        }
       },
 
-      setCsat: (id, csat) => dispatch({ type: 'patchTicket', id, patch: () => ({ csat }) }),
+      setCsat: async (id, csat) => {
+        const { ok, data } = await patchJSON(`/api/tickets/${id}`, { action: 'setCsat', csat });
+        if (ok) dispatch({ type: 'setTicketRow', ticket: data.ticket });
+      },
 
       showToast,
     };

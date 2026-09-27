@@ -20,3 +20,31 @@ export async function POST(req) {
 
   return NextResponse.json({ articles: rows.map(mapKbArticle) });
 }
+
+// PUT — "เพิ่มบทความใหม่" on the คลังความรู้ page. Body: { title, cat, step }.
+// The compact add-article form only collects one step; adding steps 2+ later
+// would need a follow-up "edit article" feature this project doesn't have yet.
+export async function PUT(req) {
+  const { title, cat, step } = await req.json().catch(() => ({}));
+
+  if (!title?.trim() || !cat?.trim() || !step?.trim()) {
+    return NextResponse.json({ error: 'กรุณากรอกข้อมูลให้ครบถ้วน' }, { status: 400 });
+  }
+
+  const category = await prisma.categories.findUnique({ where: { name: cat } });
+  if (!category) {
+    return NextResponse.json({ error: 'ไม่พบหมวดหมู่นี้' }, { status: 400 });
+  }
+
+  const created = await prisma.kb_articles.create({
+    data: {
+      category_id: category.id,
+      title: title.trim(),
+      summary: step.trim().slice(0, 255),
+      kb_steps: { create: [{ step_no: 1, content: step.trim() }] },
+    },
+    include: KB_ARTICLE_INCLUDE,
+  });
+
+  return NextResponse.json({ article: mapKbArticle(created) });
+}
