@@ -4,9 +4,6 @@
 // lives here. Only state that must survive a route change belongs in this store —
 // search boxes, form fields and filters stay local to their page.
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef } from 'react';
-import { ASSIGNEES, USERS, defaultKB, defaultTickets } from './data';
-import { calcPriority, formatThaiDateTime, formatThaiTime, guessAiSuggestion, guessCategory } from './logic';
 
 const AppContext = createContext(null);
 
@@ -20,21 +17,46 @@ const initialState = {
   // not redirect to /login before it knows whether a session was restored.
   authReady: false,
   users: USERS.map((u) => ({ ...u })),
-  kb: defaultKB(),
-  tickets: defaultTickets(),
-  ticketCounter: 102,
+  // Populated from the Prisma-backed APIs (see loadKB/loadTickets below) once
+  // someone logs in — no longer seeded from the src/lib/data.js mock arrays.
+  kb: [],
+  tickets: [],
   deflectedCount: 132,
   fbChoice: {},
   toastMsg: null,
 };
 
-/** Apply `patch` to one ticket, leaving the rest of the list untouched. */
-function patchTicket(tickets, id, patch) {
-  return tickets.map((t) => (t.id === id ? { ...t, ...patch(t) } : t));
+async function apiRequest(method, url, body) {
+  const res = await fetch(url, {
+    method,
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body ?? {}),
+  });
+  const data = await res.json().catch(() => ({}));
+  return { ok: res.ok, data };
+}
+const postJSON = (url, body) => apiRequest('POST', url, body);
+const putJSON = (url, body) => apiRequest('PUT', url, body);
+const patchJSON = (url, body) => apiRequest('PATCH', url, body);
+
+/** คลังความรู้ — same list for every role, so this always runs after login. */
+async function loadKB(dispatch) {
+  const { ok, data } = await postJSON('/api/kb');
+  if (ok) dispatch({ type: 'setKB', kb: data.articles });
 }
 
-function patchArticle(kb, id, patch) {
-  return kb.map((a) => (a.id === id ? { ...a, ...patch(a) } : a));
+/**
+ * ticket ของฉัน (employee) or คิวงาน / ticket ทั้งหมด (agent, admin) — which
+ * endpoint depends on the signed-in role, same as the read-only tab each role
+ * gets in src/lib/data.js's NAV.
+ */
+async function loadTickets(dispatch, user) {
+  const isEmployee = user.role === 'employee';
+  const { ok, data } = await postJSON(
+    isEmployee ? '/api/tickets/mine' : '/api/tickets/queue',
+    isEmployee ? { reporterId: user.id } : undefined,
+  );
+  if (ok) dispatch({ type: 'setTickets', tickets: data.tickets });
 }
 
 function reducer(state, action) {
@@ -58,6 +80,12 @@ function reducer(state, action) {
     case 'toast':
       return { ...state, toastMsg: action.msg };
 
+    case 'setKB':
+      return { ...state, kb: action.kb };
+
+    case 'setTickets':
+      return { ...state, tickets: action.tickets };
+
     case 'addUser':
       return { ...state, users: [...state.users, action.user] };
 
@@ -80,31 +108,17 @@ function reducer(state, action) {
     case 'addArticle':
       return { ...state, kb: [action.article, ...state.kb] };
 
-    case 'addComment':
-      return {
-        ...state,
-        kb: patchArticle(state.kb, action.articleId, (a) => ({
-          comments: [...a.comments, action.comment],
-        })),
-      };
-
-    case 'acceptComment':
-      return {
-        ...state,
-        kb: patchArticle(state.kb, action.articleId, (a) => ({
-          comments: a.comments.map((c) => ({ ...c, accepted: c.id === action.commentId })),
-        })),
-      };
 
     case 'addTicket':
+      return { ...state, tickets: [action.ticket, ...state.tickets] };
+
+    // Same idea as setArticle, for every ticket-detail action (claim,
+    // resolve, chat, notes, confirm, csat) — see api/tickets/[ticketNo].
+    case 'setTicketRow':
       return {
         ...state,
-        tickets: [action.ticket, ...state.tickets],
-        ticketCounter: state.ticketCounter + 1,
+        tickets: state.tickets.map((t) => (t.id === action.ticket.id ? action.ticket : t)),
       };
-
-    case 'patchTicket':
-      return { ...state, tickets: patchTicket(state.tickets, action.id, action.patch) };
 
     case 'incrementDeflected':
       return { ...state, deflectedCount: state.deflectedCount + 1 };
@@ -175,21 +189,8 @@ export function AppProvider({ children }) {
 
   // Actions mirror the design's component methods one for one.
   const actions = useMemo(() => {
-    /** Assignee record for the signed-in agent, matched by name as the design does. */
-    const meAsAssignee = (user) => ({
-      name: user.name,
-      code: user.code || (ASSIGNEES.find((a) => a.name === user.name) || {}).code || '—',
-    });
-
     return {
-      /** `user` is whatever /api/auth/login returned — no pwd_hash included. */
-      login: (user) => {
-        try {
-          localStorage.setItem(SESSION_KEY, JSON.stringify(user));
-        } catch {
-          // Private browsing / storage disabled — session just won't survive a refresh.
-        }
-        dispatch({ type: 'login', user });
+
       },
 
       logout: () => {
@@ -285,205 +286,129 @@ export function AppProvider({ children }) {
         }).catch((err) => console.error('Failed to record deflection', err));
       },
 
-      /** Persists to the database via POST /api/kb, then adds the real row to state. */
-      addArticle: async ({ title, cat, step }) => {
-        const res = await fetch('/api/kb', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title, cat, step }),
         });
-        const data = await res.json();
+        if (ok) dispatch({ type: 'setArticle', article: data.article });
+        else showToast(data.error || 'ส่งความคิดเห็นไม่สำเร็จ กรุณาลองใหม่');
+      },
 
-        if (!res.ok) {
-          showToast(data.error || 'เพิ่มบทความไม่สำเร็จ');
-          throw new Error(data.error || 'เพิ่มบทความไม่สำเร็จ');
+      acceptComment: async (articleId, index) => {
+        const { ok, data } = await patchJSON(`/api/kb/${articleId}`, {
+          action: 'acceptComment',
+          index,
+        });
+        if (ok) {
+          dispatch({ type: 'setArticle', article: data.article });
+          showToast('ทำเครื่องหมายคำตอบนี้ว่าดีที่สุดแล้ว');
         }
-
-        dispatch({ type: 'addArticle', article: data });
-        showToast('เพิ่มบทความเรียบร้อยแล้ว');
       },
-
-      /** Persists via POST /api/kb/[id]/comments, then adds the real row to state. */
-      addComment: async (articleId, user, txt) => {
-        const res = await fetch(`/api/kb/${articleId}/comments`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: user.id, authorName: user.name, comment: txt }),
-        });
-        const data = await res.json();
-
-        if (!res.ok) {
-          showToast(data.error || 'ส่งความคิดเห็นไม่สำเร็จ');
-          throw new Error(data.error || 'ส่งความคิดเห็นไม่สำเร็จ');
-        }
-
-        dispatch({ type: 'addComment', articleId, comment: data });
-      },
-
-      acceptComment: async (articleId, commentId) => {
-        const res = await fetch(`/api/kb/${articleId}/comments/${commentId}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ accepted: true }),
-        });
-
-        if (!res.ok) {
-          showToast('ทำเครื่องหมายคำตอบไม่สำเร็จ');
-          return;
-        }
-
-        dispatch({ type: 'acceptComment', articleId, commentId });
-        showToast('ทำเครื่องหมายคำตอบนี้ว่าดีที่สุดแล้ว');
-      },
-
-      /** Returns the new ticket id so the wizard can show its confirmation. */
-      submitTicket: ({ kb, user, counter, title, desc, impact, urgency }) => {
-        const now = new Date();
-        const id = `TK-${counter}`;
-        dispatch({
-          type: 'addTicket',
-          ticket: {
-            id,
-            title: title.trim(),
-            desc: desc.trim(),
-            impact,
-            urgency,
-            priority: calcPriority(impact, urgency),
-            status: 'new',
-            cat: guessCategory(kb, `${title} ${desc}`),
-            created: formatThaiDateTime(now),
-            createdAt: now.getTime(),
-            reporter: user.name,
-            assignee: null,
-            chat: [],
-            internalNotes: [],
-            resolutionSummary: null,
-            resolvedAt: null,
-            csat: null,
-            confirmed: false,
-            reopenedCount: 0,
-            aiSuggestion: guessAiSuggestion(kb, title, desc),
-          },
-        });
-        return id;
-      },
-
-      claimTicket: (id, user, message) => {
-        dispatch({
-          type: 'patchTicket',
-          id,
-          patch: (t) => ({
-            assignee: meAsAssignee(user),
-            status: t.status === 'new' ? 'in_progress' : t.status,
-          }),
-        });
-        showToast(message ?? `รับเรื่อง ${id} เรียบร้อยแล้ว`);
-      },
-
-      setTicketStatus: (id, status) =>
-        dispatch({ type: 'patchTicket', id, patch: () => ({ status }) }),
-
-      reopenTicket: (id) =>
-        dispatch({
-          type: 'patchTicket',
-          id,
-          patch: (t) => ({
-            status: 'in_progress',
-            reopenedCount: (t.reopenedCount || 0) + 1,
-            confirmed: false,
-          }),
-        }),
-
-      resolveTicket: (id, user, summary) => {
-        const when = formatThaiTime(new Date());
-        dispatch({
-          type: 'patchTicket',
-          id,
-          patch: (t) => ({
-            resolutionSummary: summary,
-            status: 'resolved',
-            resolvedAt: Date.now(),
-            chat: [
-              ...t.chat,
-              {
-                who: user.name,
-                staff: true,
-                when,
-                txt: `แก้ไขปัญหาเรียบร้อยแล้วครับ/ค่ะ สรุป: ${summary}`,
-              },
-            ],
-          }),
-        });
-        showToast('บันทึกการแก้ไขแล้ว รอผู้ใช้ยืนยัน');
-      },
-
-      addInternalNote: (id, user, txt) =>
-        dispatch({
-          type: 'patchTicket',
-          id,
-          patch: (t) => ({
-            internalNotes: [
-              ...t.internalNotes,
-              { who: user.name, when: formatThaiTime(new Date()), txt },
-            ],
-          }),
-        }),
-
-      sendChat: (id, user, txt, staff) =>
-        dispatch({
-          type: 'patchTicket',
-          id,
-          patch: (t) => ({
-            chat: [
-              ...t.chat,
-              { who: user.name, staff, when: formatThaiTime(new Date()), txt },
-            ],
-          }),
-        }),
 
       /**
-       * The reporter confirms the fix. This closes the ticket and, as in the
-       * design, folds its resolution summary into a new knowledge-base article.
+       * Files the ticket via POST /api/tickets/report (priority, category and
+       * the AI-suggestion guess are all computed server-side from the real
+       * DB). Returns the new ticket's id so the wizard can show its
+       * confirmation screen, or null if the request failed.
        */
-      confirmFixedYes: (ticket, kb) => {
-        dispatch({
-          type: 'patchTicket',
-          id: ticket.id,
-          patch: () => ({ status: 'closed', confirmed: true }),
+      submitTicket: async ({ user, title, desc, impact, urgency }) => {
+        const { ok, data } = await postJSON('/api/tickets/report', {
+          title,
+          desc,
+          impact,
+          urgency,
+          reporterId: user.id,
         });
-        if (ticket.resolutionSummary && !kb.some((k) => k.fromTicket === ticket.id)) {
-          dispatch({
-            type: 'addArticle',
-            article: {
-              id: 'kb-auto-' + ticket.id,
-              cat: ticket.cat,
-              title: `วิธีแก้: ${ticket.title}`,
-              summary: ticket.resolutionSummary.slice(0, 70),
-              updated: 'วันนี้',
-              views: 0,
-              tags: [ticket.title.toLowerCase()],
-              steps: [ticket.resolutionSummary],
-              comments: [],
-              fromTicket: ticket.id,
-            },
-          });
+        if (!ok) {
+          showToast(data.error || 'แจ้งปัญหาไม่สำเร็จ กรุณาลองใหม่');
+          return null;
         }
-        showToast('ปิดงานเรียบร้อย ขอบคุณสำหรับการยืนยัน');
+        dispatch({ type: 'addTicket', ticket: data.ticket });
+        return data.ticket.id;
       },
 
-      confirmFixedNo: (id) => {
-        dispatch({
-          type: 'patchTicket',
-          id,
-          patch: (t) => ({
-            status: 'in_progress',
-            reopenedCount: (t.reopenedCount || 0) + 1,
-          }),
+      // Everything below goes through PATCH /api/tickets/:ticketNo — see
+      // that route for what each action does server-side. All of them
+      // replace the ticket in state with the fresh copy the server returns,
+      // so what's on screen always matches the database.
+      claimTicket: async (id, user, message) => {
+        const { ok, data } = await patchJSON(`/api/tickets/${id}`, { action: 'claim', userId: user.id });
+        if (ok) {
+          dispatch({ type: 'setTicketRow', ticket: data.ticket });
+          showToast(message ?? `รับเรื่อง ${id} เรียบร้อยแล้ว`);
+        } else {
+          showToast(data.error || 'รับเรื่องไม่สำเร็จ กรุณาลองใหม่');
+        }
+      },
+
+      setTicketStatus: async (id, status) => {
+        const { ok, data } = await patchJSON(`/api/tickets/${id}`, { action: 'setStatus', status });
+        if (ok) dispatch({ type: 'setTicketRow', ticket: data.ticket });
+      },
+
+      reopenTicket: async (id) => {
+        const { ok, data } = await patchJSON(`/api/tickets/${id}`, { action: 'reopen' });
+        if (ok) {
+          dispatch({ type: 'setTicketRow', ticket: data.ticket });
+          showToast('เปิดเรื่องนี้อีกครั้งให้ทีม IT ดูต่อแล้ว');
+        }
+      },
+
+      resolveTicket: async (id, user, summary) => {
+        const { ok, data } = await patchJSON(`/api/tickets/${id}`, {
+          action: 'resolve',
+          userId: user.id,
+          summary,
         });
-        showToast('เปิดเรื่องนี้อีกครั้งให้ทีม IT ดูต่อแล้ว');
+        if (ok) {
+          dispatch({ type: 'setTicketRow', ticket: data.ticket });
+          showToast('บันทึกการแก้ไขแล้ว รอผู้ใช้ยืนยัน');
+        } else {
+          showToast(data.error || 'บันทึกไม่สำเร็จ กรุณาลองใหม่');
+        }
       },
 
-      setCsat: (id, csat) => dispatch({ type: 'patchTicket', id, patch: () => ({ csat }) }),
+      addInternalNote: async (id, user, txt) => {
+        const { ok, data } = await patchJSON(`/api/tickets/${id}`, {
+          action: 'addInternalNote',
+          userId: user.id,
+          text: txt,
+        });
+        if (ok) dispatch({ type: 'setTicketRow', ticket: data.ticket });
+      },
+
+      sendChat: async (id, user, txt, staff) => {
+        const { ok, data } = await patchJSON(`/api/tickets/${id}`, {
+          action: 'sendChat',
+          userId: user.id,
+          text: txt,
+          staff,
+        });
+        if (ok) dispatch({ type: 'setTicketRow', ticket: data.ticket });
+      },
+
+      /**
+       * The reporter confirms the fix. Closes the ticket and, server-side,
+       * folds its resolution summary into a new knowledge-base article
+       * (kb_articles.source_ticket_id) — same as the design describes.
+       */
+      confirmFixedYes: async (ticket) => {
+        const { ok, data } = await patchJSON(`/api/tickets/${ticket.id}`, { action: 'confirmYes' });
+        if (ok) {
+          dispatch({ type: 'setTicketRow', ticket: data.ticket });
+          showToast('ปิดงานเรียบร้อย ขอบคุณสำหรับการยืนยัน');
+        }
+      },
+
+      confirmFixedNo: async (id) => {
+        const { ok, data } = await patchJSON(`/api/tickets/${id}`, { action: 'confirmNo' });
+        if (ok) {
+          dispatch({ type: 'setTicketRow', ticket: data.ticket });
+          showToast('เปิดเรื่องนี้อีกครั้งให้ทีม IT ดูต่อแล้ว');
+        }
+      },
+
+      setCsat: async (id, csat) => {
+        const { ok, data } = await patchJSON(`/api/tickets/${id}`, { action: 'setCsat', csat });
+        if (ok) dispatch({ type: 'setTicketRow', ticket: data.ticket });
+      },
 
       showToast,
     };

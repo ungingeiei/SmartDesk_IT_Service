@@ -13,7 +13,7 @@ import TicketConfirmStage from '@/components/tickets/new/TicketConfirmStage';
  * Each stage lives in its own component file.
  */
 function NewTicketWizard() {
-  const { kb, currentUser, ticketCounter, submitTicket } = useApp();
+  const { kb, currentUser, submitTicket } = useApp();
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -26,6 +26,7 @@ function NewTicketWizard() {
   const [stage, setStage] = useState(prefilled ? 'form' : 'search');
   const [query, setQuery] = useState('');
   const [submittedId, setSubmittedId] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({
     title: prefillTitle,
     desc: prefillDesc,
@@ -43,13 +44,18 @@ function NewTicketWizard() {
     setStage('form');
   }
 
-  function handleSubmit() {
-    const id = submitTicket({
-      kb,
-      user: currentUser,
-      counter: ticketCounter,
-      ...form,
-    });
+  async function handleSubmit() {
+    if (submitting) return;
+    setSubmitting(true);
+
+    // submitTicket now files the ticket via Prisma (POST /api/tickets/report)
+    // and returns null if that request failed, in which case we stay on the
+    // form instead of moving to a confirmation for a ticket that was never
+    // actually created.
+    const id = await submitTicket({ user: currentUser, ...form });
+    setSubmitting(false);
+    if (!id) return;
+
     setSubmittedId(id);
     setForm({ title: '', desc: '', impact: null, urgency: null });
     setStage('confirm');
