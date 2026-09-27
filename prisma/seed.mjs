@@ -142,6 +142,7 @@ async function seedKb(categoryIdByName, userByName) {
         views: article.views,
         created_at: updatedAt,
         updated_at: updatedAt,
+        status: 'approved',
       },
     });
     articleIdByMockId.set(article.id, created.id);

@@ -9,8 +9,8 @@
  * 🟢 You can import this file directly.
  */
 import type * as runtime from "@prisma/client/runtime/library"
-import type * as $Enums from "../enums.ts"
-import type * as Prisma from "../internal/prismaNamespace.ts"
+import type * as $Enums from "../enums"
+import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model kb_articles
@@ -31,6 +31,8 @@ export type Kb_articlesAvgAggregateOutputType = {
   category_id: number | null
   views: number | null
   source_ticket_id: number | null
+  created_by: number | null
+  reviewed_by: number | null
 }
 
 export type Kb_articlesSumAggregateOutputType = {
@@ -38,6 +40,8 @@ export type Kb_articlesSumAggregateOutputType = {
   category_id: number | null
   views: number | null
   source_ticket_id: number | null
+  created_by: number | null
+  reviewed_by: number | null
 }
 
 export type Kb_articlesMinAggregateOutputType = {
@@ -49,6 +53,10 @@ export type Kb_articlesMinAggregateOutputType = {
   source_ticket_id: number | null
   created_at: Date | null
   updated_at: Date | null
+  status: $Enums.kb_status_enum | null
+  created_by: number | null
+  reviewed_by: number | null
+  reviewed_at: Date | null
 }
 
 export type Kb_articlesMaxAggregateOutputType = {
@@ -60,6 +68,10 @@ export type Kb_articlesMaxAggregateOutputType = {
   source_ticket_id: number | null
   created_at: Date | null
   updated_at: Date | null
+  status: $Enums.kb_status_enum | null
+  created_by: number | null
+  reviewed_by: number | null
+  reviewed_at: Date | null
 }
 
 export type Kb_articlesCountAggregateOutputType = {
@@ -71,6 +83,10 @@ export type Kb_articlesCountAggregateOutputType = {
   source_ticket_id: number
   created_at: number
   updated_at: number
+  status: number
+  created_by: number
+  reviewed_by: number
+  reviewed_at: number
   _all: number
 }
 
@@ -80,6 +96,8 @@ export type Kb_articlesAvgAggregateInputType = {
   category_id?: true
   views?: true
   source_ticket_id?: true
+  created_by?: true
+  reviewed_by?: true
 }
 
 export type Kb_articlesSumAggregateInputType = {
@@ -87,6 +105,8 @@ export type Kb_articlesSumAggregateInputType = {
   category_id?: true
   views?: true
   source_ticket_id?: true
+  created_by?: true
+  reviewed_by?: true
 }
 
 export type Kb_articlesMinAggregateInputType = {
@@ -98,6 +118,10 @@ export type Kb_articlesMinAggregateInputType = {
   source_ticket_id?: true
   created_at?: true
   updated_at?: true
+  status?: true
+  created_by?: true
+  reviewed_by?: true
+  reviewed_at?: true
 }
 
 export type Kb_articlesMaxAggregateInputType = {
@@ -109,6 +133,10 @@ export type Kb_articlesMaxAggregateInputType = {
   source_ticket_id?: true
   created_at?: true
   updated_at?: true
+  status?: true
+  created_by?: true
+  reviewed_by?: true
+  reviewed_at?: true
 }
 
 export type Kb_articlesCountAggregateInputType = {
@@ -120,6 +148,10 @@ export type Kb_articlesCountAggregateInputType = {
   source_ticket_id?: true
   created_at?: true
   updated_at?: true
+  status?: true
+  created_by?: true
+  reviewed_by?: true
+  reviewed_at?: true
   _all?: true
 }
 
@@ -218,6 +250,10 @@ export type Kb_articlesGroupByOutputType = {
   source_ticket_id: number | null
   created_at: Date
   updated_at: Date
+  status: $Enums.kb_status_enum
+  created_by: number | null
+  reviewed_by: number | null
+  reviewed_at: Date | null
   _count: Kb_articlesCountAggregateOutputType | null
   _avg: Kb_articlesAvgAggregateOutputType | null
   _sum: Kb_articlesSumAggregateOutputType | null
@@ -252,6 +288,12 @@ export type kb_articlesWhereInput = {
   source_ticket_id?: Prisma.IntNullableFilter<"kb_articles"> | number | null
   created_at?: Prisma.DateTimeFilter<"kb_articles"> | Date | string
   updated_at?: Prisma.DateTimeFilter<"kb_articles"> | Date | string
+  status?: Prisma.Enumkb_status_enumFilter<"kb_articles"> | $Enums.kb_status_enum
+  created_by?: Prisma.IntNullableFilter<"kb_articles"> | number | null
+  reviewed_by?: Prisma.IntNullableFilter<"kb_articles"> | number | null
+  reviewed_at?: Prisma.DateTimeNullableFilter<"kb_articles"> | Date | string | null
+  users_kb_articles_created_byTousers?: Prisma.XOR<Prisma.UsersNullableScalarRelationFilter, Prisma.usersWhereInput> | null
+  users_kb_articles_reviewed_byTousers?: Prisma.XOR<Prisma.UsersNullableScalarRelationFilter, Prisma.usersWhereInput> | null
   kb_article_tags?: Prisma.Kb_article_tagsListRelationFilter
   categories?: Prisma.XOR<Prisma.CategoriesScalarRelationFilter, Prisma.categoriesWhereInput>
   tickets_kb_articles_source_ticket_idTotickets?: Prisma.XOR<Prisma.TicketsNullableScalarRelationFilter, Prisma.ticketsWhereInput> | null
@@ -271,6 +313,12 @@ export type kb_articlesOrderByWithRelationInput = {
   source_ticket_id?: Prisma.SortOrderInput | Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  created_by?: Prisma.SortOrderInput | Prisma.SortOrder
+  reviewed_by?: Prisma.SortOrderInput | Prisma.SortOrder
+  reviewed_at?: Prisma.SortOrderInput | Prisma.SortOrder
+  users_kb_articles_created_byTousers?: Prisma.usersOrderByWithRelationInput
+  users_kb_articles_reviewed_byTousers?: Prisma.usersOrderByWithRelationInput
   kb_article_tags?: Prisma.kb_article_tagsOrderByRelationAggregateInput
   categories?: Prisma.categoriesOrderByWithRelationInput
   tickets_kb_articles_source_ticket_idTotickets?: Prisma.ticketsOrderByWithRelationInput
@@ -293,6 +341,12 @@ export type kb_articlesWhereUniqueInput = Prisma.AtLeast<{
   views?: Prisma.IntFilter<"kb_articles"> | number
   created_at?: Prisma.DateTimeFilter<"kb_articles"> | Date | string
   updated_at?: Prisma.DateTimeFilter<"kb_articles"> | Date | string
+  status?: Prisma.Enumkb_status_enumFilter<"kb_articles"> | $Enums.kb_status_enum
+  created_by?: Prisma.IntNullableFilter<"kb_articles"> | number | null
+  reviewed_by?: Prisma.IntNullableFilter<"kb_articles"> | number | null
+  reviewed_at?: Prisma.DateTimeNullableFilter<"kb_articles"> | Date | string | null
+  users_kb_articles_created_byTousers?: Prisma.XOR<Prisma.UsersNullableScalarRelationFilter, Prisma.usersWhereInput> | null
+  users_kb_articles_reviewed_byTousers?: Prisma.XOR<Prisma.UsersNullableScalarRelationFilter, Prisma.usersWhereInput> | null
   kb_article_tags?: Prisma.Kb_article_tagsListRelationFilter
   categories?: Prisma.XOR<Prisma.CategoriesScalarRelationFilter, Prisma.categoriesWhereInput>
   tickets_kb_articles_source_ticket_idTotickets?: Prisma.XOR<Prisma.TicketsNullableScalarRelationFilter, Prisma.ticketsWhereInput> | null
@@ -312,6 +366,10 @@ export type kb_articlesOrderByWithAggregationInput = {
   source_ticket_id?: Prisma.SortOrderInput | Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  created_by?: Prisma.SortOrderInput | Prisma.SortOrder
+  reviewed_by?: Prisma.SortOrderInput | Prisma.SortOrder
+  reviewed_at?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.kb_articlesCountOrderByAggregateInput
   _avg?: Prisma.kb_articlesAvgOrderByAggregateInput
   _max?: Prisma.kb_articlesMaxOrderByAggregateInput
@@ -331,6 +389,10 @@ export type kb_articlesScalarWhereWithAggregatesInput = {
   source_ticket_id?: Prisma.IntNullableWithAggregatesFilter<"kb_articles"> | number | null
   created_at?: Prisma.DateTimeWithAggregatesFilter<"kb_articles"> | Date | string
   updated_at?: Prisma.DateTimeWithAggregatesFilter<"kb_articles"> | Date | string
+  status?: Prisma.Enumkb_status_enumWithAggregatesFilter<"kb_articles"> | $Enums.kb_status_enum
+  created_by?: Prisma.IntNullableWithAggregatesFilter<"kb_articles"> | number | null
+  reviewed_by?: Prisma.IntNullableWithAggregatesFilter<"kb_articles"> | number | null
+  reviewed_at?: Prisma.DateTimeNullableWithAggregatesFilter<"kb_articles"> | Date | string | null
 }
 
 export type kb_articlesCreateInput = {
@@ -339,6 +401,10 @@ export type kb_articlesCreateInput = {
   views?: number
   created_at?: Date | string
   updated_at?: Date | string
+  status?: $Enums.kb_status_enum
+  reviewed_at?: Date | string | null
+  users_kb_articles_created_byTousers?: Prisma.usersCreateNestedOneWithoutKb_articles_kb_articles_created_byTousersInput
+  users_kb_articles_reviewed_byTousers?: Prisma.usersCreateNestedOneWithoutKb_articles_kb_articles_reviewed_byTousersInput
   kb_article_tags?: Prisma.kb_article_tagsCreateNestedManyWithoutKb_articlesInput
   categories: Prisma.categoriesCreateNestedOneWithoutKb_articlesInput
   tickets_kb_articles_source_ticket_idTotickets?: Prisma.ticketsCreateNestedOneWithoutKb_articles_kb_articles_source_ticket_idToticketsInput
@@ -358,6 +424,10 @@ export type kb_articlesUncheckedCreateInput = {
   source_ticket_id?: number | null
   created_at?: Date | string
   updated_at?: Date | string
+  status?: $Enums.kb_status_enum
+  created_by?: number | null
+  reviewed_by?: number | null
+  reviewed_at?: Date | string | null
   kb_article_tags?: Prisma.kb_article_tagsUncheckedCreateNestedManyWithoutKb_articlesInput
   kb_comments?: Prisma.kb_commentsUncheckedCreateNestedManyWithoutKb_articlesInput
   kb_deflections?: Prisma.kb_deflectionsUncheckedCreateNestedManyWithoutKb_articlesInput
@@ -372,6 +442,10 @@ export type kb_articlesUpdateInput = {
   views?: Prisma.IntFieldUpdateOperationsInput | number
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.Enumkb_status_enumFieldUpdateOperationsInput | $Enums.kb_status_enum
+  reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  users_kb_articles_created_byTousers?: Prisma.usersUpdateOneWithoutKb_articles_kb_articles_created_byTousersNestedInput
+  users_kb_articles_reviewed_byTousers?: Prisma.usersUpdateOneWithoutKb_articles_kb_articles_reviewed_byTousersNestedInput
   kb_article_tags?: Prisma.kb_article_tagsUpdateManyWithoutKb_articlesNestedInput
   categories?: Prisma.categoriesUpdateOneRequiredWithoutKb_articlesNestedInput
   tickets_kb_articles_source_ticket_idTotickets?: Prisma.ticketsUpdateOneWithoutKb_articles_kb_articles_source_ticket_idToticketsNestedInput
@@ -391,6 +465,10 @@ export type kb_articlesUncheckedUpdateInput = {
   source_ticket_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.Enumkb_status_enumFieldUpdateOperationsInput | $Enums.kb_status_enum
+  created_by?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  reviewed_by?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   kb_article_tags?: Prisma.kb_article_tagsUncheckedUpdateManyWithoutKb_articlesNestedInput
   kb_comments?: Prisma.kb_commentsUncheckedUpdateManyWithoutKb_articlesNestedInput
   kb_deflections?: Prisma.kb_deflectionsUncheckedUpdateManyWithoutKb_articlesNestedInput
@@ -408,6 +486,10 @@ export type kb_articlesCreateManyInput = {
   source_ticket_id?: number | null
   created_at?: Date | string
   updated_at?: Date | string
+  status?: $Enums.kb_status_enum
+  created_by?: number | null
+  reviewed_by?: number | null
+  reviewed_at?: Date | string | null
 }
 
 export type kb_articlesUpdateManyMutationInput = {
@@ -416,6 +498,8 @@ export type kb_articlesUpdateManyMutationInput = {
   views?: Prisma.IntFieldUpdateOperationsInput | number
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.Enumkb_status_enumFieldUpdateOperationsInput | $Enums.kb_status_enum
+  reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type kb_articlesUncheckedUpdateManyInput = {
@@ -427,6 +511,10 @@ export type kb_articlesUncheckedUpdateManyInput = {
   source_ticket_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.Enumkb_status_enumFieldUpdateOperationsInput | $Enums.kb_status_enum
+  created_by?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  reviewed_by?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type Kb_articlesListRelationFilter = {
@@ -453,6 +541,10 @@ export type kb_articlesCountOrderByAggregateInput = {
   source_ticket_id?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  created_by?: Prisma.SortOrder
+  reviewed_by?: Prisma.SortOrder
+  reviewed_at?: Prisma.SortOrder
 }
 
 export type kb_articlesAvgOrderByAggregateInput = {
@@ -460,6 +552,8 @@ export type kb_articlesAvgOrderByAggregateInput = {
   category_id?: Prisma.SortOrder
   views?: Prisma.SortOrder
   source_ticket_id?: Prisma.SortOrder
+  created_by?: Prisma.SortOrder
+  reviewed_by?: Prisma.SortOrder
 }
 
 export type kb_articlesMaxOrderByAggregateInput = {
@@ -471,6 +565,10 @@ export type kb_articlesMaxOrderByAggregateInput = {
   source_ticket_id?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  created_by?: Prisma.SortOrder
+  reviewed_by?: Prisma.SortOrder
+  reviewed_at?: Prisma.SortOrder
 }
 
 export type kb_articlesMinOrderByAggregateInput = {
@@ -482,6 +580,10 @@ export type kb_articlesMinOrderByAggregateInput = {
   source_ticket_id?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  created_by?: Prisma.SortOrder
+  reviewed_by?: Prisma.SortOrder
+  reviewed_at?: Prisma.SortOrder
 }
 
 export type kb_articlesSumOrderByAggregateInput = {
@@ -489,6 +591,8 @@ export type kb_articlesSumOrderByAggregateInput = {
   category_id?: Prisma.SortOrder
   views?: Prisma.SortOrder
   source_ticket_id?: Prisma.SortOrder
+  created_by?: Prisma.SortOrder
+  reviewed_by?: Prisma.SortOrder
 }
 
 export type Kb_articlesNullableScalarRelationFilter = {
@@ -554,6 +658,14 @@ export type kb_articlesUpdateOneRequiredWithoutKb_article_tagsNestedInput = {
 
 export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
+}
+
+export type Enumkb_status_enumFieldUpdateOperationsInput = {
+  set?: $Enums.kb_status_enum
+}
+
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
 }
 
 export type NullableIntFieldUpdateOperationsInput = {
@@ -670,12 +782,100 @@ export type kb_articlesUncheckedUpdateOneWithoutTickets_kb_articles_source_ticke
   update?: Prisma.XOR<Prisma.XOR<Prisma.kb_articlesUpdateToOneWithWhereWithoutTickets_kb_articles_source_ticket_idToticketsInput, Prisma.kb_articlesUpdateWithoutTickets_kb_articles_source_ticket_idToticketsInput>, Prisma.kb_articlesUncheckedUpdateWithoutTickets_kb_articles_source_ticket_idToticketsInput>
 }
 
+export type kb_articlesCreateNestedManyWithoutUsers_kb_articles_created_byTousersInput = {
+  create?: Prisma.XOR<Prisma.kb_articlesCreateWithoutUsers_kb_articles_created_byTousersInput, Prisma.kb_articlesUncheckedCreateWithoutUsers_kb_articles_created_byTousersInput> | Prisma.kb_articlesCreateWithoutUsers_kb_articles_created_byTousersInput[] | Prisma.kb_articlesUncheckedCreateWithoutUsers_kb_articles_created_byTousersInput[]
+  connectOrCreate?: Prisma.kb_articlesCreateOrConnectWithoutUsers_kb_articles_created_byTousersInput | Prisma.kb_articlesCreateOrConnectWithoutUsers_kb_articles_created_byTousersInput[]
+  createMany?: Prisma.kb_articlesCreateManyUsers_kb_articles_created_byTousersInputEnvelope
+  connect?: Prisma.kb_articlesWhereUniqueInput | Prisma.kb_articlesWhereUniqueInput[]
+}
+
+export type kb_articlesCreateNestedManyWithoutUsers_kb_articles_reviewed_byTousersInput = {
+  create?: Prisma.XOR<Prisma.kb_articlesCreateWithoutUsers_kb_articles_reviewed_byTousersInput, Prisma.kb_articlesUncheckedCreateWithoutUsers_kb_articles_reviewed_byTousersInput> | Prisma.kb_articlesCreateWithoutUsers_kb_articles_reviewed_byTousersInput[] | Prisma.kb_articlesUncheckedCreateWithoutUsers_kb_articles_reviewed_byTousersInput[]
+  connectOrCreate?: Prisma.kb_articlesCreateOrConnectWithoutUsers_kb_articles_reviewed_byTousersInput | Prisma.kb_articlesCreateOrConnectWithoutUsers_kb_articles_reviewed_byTousersInput[]
+  createMany?: Prisma.kb_articlesCreateManyUsers_kb_articles_reviewed_byTousersInputEnvelope
+  connect?: Prisma.kb_articlesWhereUniqueInput | Prisma.kb_articlesWhereUniqueInput[]
+}
+
+export type kb_articlesUncheckedCreateNestedManyWithoutUsers_kb_articles_created_byTousersInput = {
+  create?: Prisma.XOR<Prisma.kb_articlesCreateWithoutUsers_kb_articles_created_byTousersInput, Prisma.kb_articlesUncheckedCreateWithoutUsers_kb_articles_created_byTousersInput> | Prisma.kb_articlesCreateWithoutUsers_kb_articles_created_byTousersInput[] | Prisma.kb_articlesUncheckedCreateWithoutUsers_kb_articles_created_byTousersInput[]
+  connectOrCreate?: Prisma.kb_articlesCreateOrConnectWithoutUsers_kb_articles_created_byTousersInput | Prisma.kb_articlesCreateOrConnectWithoutUsers_kb_articles_created_byTousersInput[]
+  createMany?: Prisma.kb_articlesCreateManyUsers_kb_articles_created_byTousersInputEnvelope
+  connect?: Prisma.kb_articlesWhereUniqueInput | Prisma.kb_articlesWhereUniqueInput[]
+}
+
+export type kb_articlesUncheckedCreateNestedManyWithoutUsers_kb_articles_reviewed_byTousersInput = {
+  create?: Prisma.XOR<Prisma.kb_articlesCreateWithoutUsers_kb_articles_reviewed_byTousersInput, Prisma.kb_articlesUncheckedCreateWithoutUsers_kb_articles_reviewed_byTousersInput> | Prisma.kb_articlesCreateWithoutUsers_kb_articles_reviewed_byTousersInput[] | Prisma.kb_articlesUncheckedCreateWithoutUsers_kb_articles_reviewed_byTousersInput[]
+  connectOrCreate?: Prisma.kb_articlesCreateOrConnectWithoutUsers_kb_articles_reviewed_byTousersInput | Prisma.kb_articlesCreateOrConnectWithoutUsers_kb_articles_reviewed_byTousersInput[]
+  createMany?: Prisma.kb_articlesCreateManyUsers_kb_articles_reviewed_byTousersInputEnvelope
+  connect?: Prisma.kb_articlesWhereUniqueInput | Prisma.kb_articlesWhereUniqueInput[]
+}
+
+export type kb_articlesUpdateManyWithoutUsers_kb_articles_created_byTousersNestedInput = {
+  create?: Prisma.XOR<Prisma.kb_articlesCreateWithoutUsers_kb_articles_created_byTousersInput, Prisma.kb_articlesUncheckedCreateWithoutUsers_kb_articles_created_byTousersInput> | Prisma.kb_articlesCreateWithoutUsers_kb_articles_created_byTousersInput[] | Prisma.kb_articlesUncheckedCreateWithoutUsers_kb_articles_created_byTousersInput[]
+  connectOrCreate?: Prisma.kb_articlesCreateOrConnectWithoutUsers_kb_articles_created_byTousersInput | Prisma.kb_articlesCreateOrConnectWithoutUsers_kb_articles_created_byTousersInput[]
+  upsert?: Prisma.kb_articlesUpsertWithWhereUniqueWithoutUsers_kb_articles_created_byTousersInput | Prisma.kb_articlesUpsertWithWhereUniqueWithoutUsers_kb_articles_created_byTousersInput[]
+  createMany?: Prisma.kb_articlesCreateManyUsers_kb_articles_created_byTousersInputEnvelope
+  set?: Prisma.kb_articlesWhereUniqueInput | Prisma.kb_articlesWhereUniqueInput[]
+  disconnect?: Prisma.kb_articlesWhereUniqueInput | Prisma.kb_articlesWhereUniqueInput[]
+  delete?: Prisma.kb_articlesWhereUniqueInput | Prisma.kb_articlesWhereUniqueInput[]
+  connect?: Prisma.kb_articlesWhereUniqueInput | Prisma.kb_articlesWhereUniqueInput[]
+  update?: Prisma.kb_articlesUpdateWithWhereUniqueWithoutUsers_kb_articles_created_byTousersInput | Prisma.kb_articlesUpdateWithWhereUniqueWithoutUsers_kb_articles_created_byTousersInput[]
+  updateMany?: Prisma.kb_articlesUpdateManyWithWhereWithoutUsers_kb_articles_created_byTousersInput | Prisma.kb_articlesUpdateManyWithWhereWithoutUsers_kb_articles_created_byTousersInput[]
+  deleteMany?: Prisma.kb_articlesScalarWhereInput | Prisma.kb_articlesScalarWhereInput[]
+}
+
+export type kb_articlesUpdateManyWithoutUsers_kb_articles_reviewed_byTousersNestedInput = {
+  create?: Prisma.XOR<Prisma.kb_articlesCreateWithoutUsers_kb_articles_reviewed_byTousersInput, Prisma.kb_articlesUncheckedCreateWithoutUsers_kb_articles_reviewed_byTousersInput> | Prisma.kb_articlesCreateWithoutUsers_kb_articles_reviewed_byTousersInput[] | Prisma.kb_articlesUncheckedCreateWithoutUsers_kb_articles_reviewed_byTousersInput[]
+  connectOrCreate?: Prisma.kb_articlesCreateOrConnectWithoutUsers_kb_articles_reviewed_byTousersInput | Prisma.kb_articlesCreateOrConnectWithoutUsers_kb_articles_reviewed_byTousersInput[]
+  upsert?: Prisma.kb_articlesUpsertWithWhereUniqueWithoutUsers_kb_articles_reviewed_byTousersInput | Prisma.kb_articlesUpsertWithWhereUniqueWithoutUsers_kb_articles_reviewed_byTousersInput[]
+  createMany?: Prisma.kb_articlesCreateManyUsers_kb_articles_reviewed_byTousersInputEnvelope
+  set?: Prisma.kb_articlesWhereUniqueInput | Prisma.kb_articlesWhereUniqueInput[]
+  disconnect?: Prisma.kb_articlesWhereUniqueInput | Prisma.kb_articlesWhereUniqueInput[]
+  delete?: Prisma.kb_articlesWhereUniqueInput | Prisma.kb_articlesWhereUniqueInput[]
+  connect?: Prisma.kb_articlesWhereUniqueInput | Prisma.kb_articlesWhereUniqueInput[]
+  update?: Prisma.kb_articlesUpdateWithWhereUniqueWithoutUsers_kb_articles_reviewed_byTousersInput | Prisma.kb_articlesUpdateWithWhereUniqueWithoutUsers_kb_articles_reviewed_byTousersInput[]
+  updateMany?: Prisma.kb_articlesUpdateManyWithWhereWithoutUsers_kb_articles_reviewed_byTousersInput | Prisma.kb_articlesUpdateManyWithWhereWithoutUsers_kb_articles_reviewed_byTousersInput[]
+  deleteMany?: Prisma.kb_articlesScalarWhereInput | Prisma.kb_articlesScalarWhereInput[]
+}
+
+export type kb_articlesUncheckedUpdateManyWithoutUsers_kb_articles_created_byTousersNestedInput = {
+  create?: Prisma.XOR<Prisma.kb_articlesCreateWithoutUsers_kb_articles_created_byTousersInput, Prisma.kb_articlesUncheckedCreateWithoutUsers_kb_articles_created_byTousersInput> | Prisma.kb_articlesCreateWithoutUsers_kb_articles_created_byTousersInput[] | Prisma.kb_articlesUncheckedCreateWithoutUsers_kb_articles_created_byTousersInput[]
+  connectOrCreate?: Prisma.kb_articlesCreateOrConnectWithoutUsers_kb_articles_created_byTousersInput | Prisma.kb_articlesCreateOrConnectWithoutUsers_kb_articles_created_byTousersInput[]
+  upsert?: Prisma.kb_articlesUpsertWithWhereUniqueWithoutUsers_kb_articles_created_byTousersInput | Prisma.kb_articlesUpsertWithWhereUniqueWithoutUsers_kb_articles_created_byTousersInput[]
+  createMany?: Prisma.kb_articlesCreateManyUsers_kb_articles_created_byTousersInputEnvelope
+  set?: Prisma.kb_articlesWhereUniqueInput | Prisma.kb_articlesWhereUniqueInput[]
+  disconnect?: Prisma.kb_articlesWhereUniqueInput | Prisma.kb_articlesWhereUniqueInput[]
+  delete?: Prisma.kb_articlesWhereUniqueInput | Prisma.kb_articlesWhereUniqueInput[]
+  connect?: Prisma.kb_articlesWhereUniqueInput | Prisma.kb_articlesWhereUniqueInput[]
+  update?: Prisma.kb_articlesUpdateWithWhereUniqueWithoutUsers_kb_articles_created_byTousersInput | Prisma.kb_articlesUpdateWithWhereUniqueWithoutUsers_kb_articles_created_byTousersInput[]
+  updateMany?: Prisma.kb_articlesUpdateManyWithWhereWithoutUsers_kb_articles_created_byTousersInput | Prisma.kb_articlesUpdateManyWithWhereWithoutUsers_kb_articles_created_byTousersInput[]
+  deleteMany?: Prisma.kb_articlesScalarWhereInput | Prisma.kb_articlesScalarWhereInput[]
+}
+
+export type kb_articlesUncheckedUpdateManyWithoutUsers_kb_articles_reviewed_byTousersNestedInput = {
+  create?: Prisma.XOR<Prisma.kb_articlesCreateWithoutUsers_kb_articles_reviewed_byTousersInput, Prisma.kb_articlesUncheckedCreateWithoutUsers_kb_articles_reviewed_byTousersInput> | Prisma.kb_articlesCreateWithoutUsers_kb_articles_reviewed_byTousersInput[] | Prisma.kb_articlesUncheckedCreateWithoutUsers_kb_articles_reviewed_byTousersInput[]
+  connectOrCreate?: Prisma.kb_articlesCreateOrConnectWithoutUsers_kb_articles_reviewed_byTousersInput | Prisma.kb_articlesCreateOrConnectWithoutUsers_kb_articles_reviewed_byTousersInput[]
+  upsert?: Prisma.kb_articlesUpsertWithWhereUniqueWithoutUsers_kb_articles_reviewed_byTousersInput | Prisma.kb_articlesUpsertWithWhereUniqueWithoutUsers_kb_articles_reviewed_byTousersInput[]
+  createMany?: Prisma.kb_articlesCreateManyUsers_kb_articles_reviewed_byTousersInputEnvelope
+  set?: Prisma.kb_articlesWhereUniqueInput | Prisma.kb_articlesWhereUniqueInput[]
+  disconnect?: Prisma.kb_articlesWhereUniqueInput | Prisma.kb_articlesWhereUniqueInput[]
+  delete?: Prisma.kb_articlesWhereUniqueInput | Prisma.kb_articlesWhereUniqueInput[]
+  connect?: Prisma.kb_articlesWhereUniqueInput | Prisma.kb_articlesWhereUniqueInput[]
+  update?: Prisma.kb_articlesUpdateWithWhereUniqueWithoutUsers_kb_articles_reviewed_byTousersInput | Prisma.kb_articlesUpdateWithWhereUniqueWithoutUsers_kb_articles_reviewed_byTousersInput[]
+  updateMany?: Prisma.kb_articlesUpdateManyWithWhereWithoutUsers_kb_articles_reviewed_byTousersInput | Prisma.kb_articlesUpdateManyWithWhereWithoutUsers_kb_articles_reviewed_byTousersInput[]
+  deleteMany?: Prisma.kb_articlesScalarWhereInput | Prisma.kb_articlesScalarWhereInput[]
+}
+
 export type kb_articlesCreateWithoutCategoriesInput = {
   title: string
   summary?: string | null
   views?: number
   created_at?: Date | string
   updated_at?: Date | string
+  status?: $Enums.kb_status_enum
+  reviewed_at?: Date | string | null
+  users_kb_articles_created_byTousers?: Prisma.usersCreateNestedOneWithoutKb_articles_kb_articles_created_byTousersInput
+  users_kb_articles_reviewed_byTousers?: Prisma.usersCreateNestedOneWithoutKb_articles_kb_articles_reviewed_byTousersInput
   kb_article_tags?: Prisma.kb_article_tagsCreateNestedManyWithoutKb_articlesInput
   tickets_kb_articles_source_ticket_idTotickets?: Prisma.ticketsCreateNestedOneWithoutKb_articles_kb_articles_source_ticket_idToticketsInput
   kb_comments?: Prisma.kb_commentsCreateNestedManyWithoutKb_articlesInput
@@ -693,6 +893,10 @@ export type kb_articlesUncheckedCreateWithoutCategoriesInput = {
   source_ticket_id?: number | null
   created_at?: Date | string
   updated_at?: Date | string
+  status?: $Enums.kb_status_enum
+  created_by?: number | null
+  reviewed_by?: number | null
+  reviewed_at?: Date | string | null
   kb_article_tags?: Prisma.kb_article_tagsUncheckedCreateNestedManyWithoutKb_articlesInput
   kb_comments?: Prisma.kb_commentsUncheckedCreateNestedManyWithoutKb_articlesInput
   kb_deflections?: Prisma.kb_deflectionsUncheckedCreateNestedManyWithoutKb_articlesInput
@@ -739,6 +943,10 @@ export type kb_articlesScalarWhereInput = {
   source_ticket_id?: Prisma.IntNullableFilter<"kb_articles"> | number | null
   created_at?: Prisma.DateTimeFilter<"kb_articles"> | Date | string
   updated_at?: Prisma.DateTimeFilter<"kb_articles"> | Date | string
+  status?: Prisma.Enumkb_status_enumFilter<"kb_articles"> | $Enums.kb_status_enum
+  created_by?: Prisma.IntNullableFilter<"kb_articles"> | number | null
+  reviewed_by?: Prisma.IntNullableFilter<"kb_articles"> | number | null
+  reviewed_at?: Prisma.DateTimeNullableFilter<"kb_articles"> | Date | string | null
 }
 
 export type kb_articlesCreateWithoutKb_article_tagsInput = {
@@ -747,6 +955,10 @@ export type kb_articlesCreateWithoutKb_article_tagsInput = {
   views?: number
   created_at?: Date | string
   updated_at?: Date | string
+  status?: $Enums.kb_status_enum
+  reviewed_at?: Date | string | null
+  users_kb_articles_created_byTousers?: Prisma.usersCreateNestedOneWithoutKb_articles_kb_articles_created_byTousersInput
+  users_kb_articles_reviewed_byTousers?: Prisma.usersCreateNestedOneWithoutKb_articles_kb_articles_reviewed_byTousersInput
   categories: Prisma.categoriesCreateNestedOneWithoutKb_articlesInput
   tickets_kb_articles_source_ticket_idTotickets?: Prisma.ticketsCreateNestedOneWithoutKb_articles_kb_articles_source_ticket_idToticketsInput
   kb_comments?: Prisma.kb_commentsCreateNestedManyWithoutKb_articlesInput
@@ -765,6 +977,10 @@ export type kb_articlesUncheckedCreateWithoutKb_article_tagsInput = {
   source_ticket_id?: number | null
   created_at?: Date | string
   updated_at?: Date | string
+  status?: $Enums.kb_status_enum
+  created_by?: number | null
+  reviewed_by?: number | null
+  reviewed_at?: Date | string | null
   kb_comments?: Prisma.kb_commentsUncheckedCreateNestedManyWithoutKb_articlesInput
   kb_deflections?: Prisma.kb_deflectionsUncheckedCreateNestedManyWithoutKb_articlesInput
   kb_feedback?: Prisma.kb_feedbackUncheckedCreateNestedManyWithoutKb_articlesInput
@@ -794,6 +1010,10 @@ export type kb_articlesUpdateWithoutKb_article_tagsInput = {
   views?: Prisma.IntFieldUpdateOperationsInput | number
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.Enumkb_status_enumFieldUpdateOperationsInput | $Enums.kb_status_enum
+  reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  users_kb_articles_created_byTousers?: Prisma.usersUpdateOneWithoutKb_articles_kb_articles_created_byTousersNestedInput
+  users_kb_articles_reviewed_byTousers?: Prisma.usersUpdateOneWithoutKb_articles_kb_articles_reviewed_byTousersNestedInput
   categories?: Prisma.categoriesUpdateOneRequiredWithoutKb_articlesNestedInput
   tickets_kb_articles_source_ticket_idTotickets?: Prisma.ticketsUpdateOneWithoutKb_articles_kb_articles_source_ticket_idToticketsNestedInput
   kb_comments?: Prisma.kb_commentsUpdateManyWithoutKb_articlesNestedInput
@@ -812,6 +1032,10 @@ export type kb_articlesUncheckedUpdateWithoutKb_article_tagsInput = {
   source_ticket_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.Enumkb_status_enumFieldUpdateOperationsInput | $Enums.kb_status_enum
+  created_by?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  reviewed_by?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   kb_comments?: Prisma.kb_commentsUncheckedUpdateManyWithoutKb_articlesNestedInput
   kb_deflections?: Prisma.kb_deflectionsUncheckedUpdateManyWithoutKb_articlesNestedInput
   kb_feedback?: Prisma.kb_feedbackUncheckedUpdateManyWithoutKb_articlesNestedInput
@@ -825,6 +1049,10 @@ export type kb_articlesCreateWithoutKb_commentsInput = {
   views?: number
   created_at?: Date | string
   updated_at?: Date | string
+  status?: $Enums.kb_status_enum
+  reviewed_at?: Date | string | null
+  users_kb_articles_created_byTousers?: Prisma.usersCreateNestedOneWithoutKb_articles_kb_articles_created_byTousersInput
+  users_kb_articles_reviewed_byTousers?: Prisma.usersCreateNestedOneWithoutKb_articles_kb_articles_reviewed_byTousersInput
   kb_article_tags?: Prisma.kb_article_tagsCreateNestedManyWithoutKb_articlesInput
   categories: Prisma.categoriesCreateNestedOneWithoutKb_articlesInput
   tickets_kb_articles_source_ticket_idTotickets?: Prisma.ticketsCreateNestedOneWithoutKb_articles_kb_articles_source_ticket_idToticketsInput
@@ -843,6 +1071,10 @@ export type kb_articlesUncheckedCreateWithoutKb_commentsInput = {
   source_ticket_id?: number | null
   created_at?: Date | string
   updated_at?: Date | string
+  status?: $Enums.kb_status_enum
+  created_by?: number | null
+  reviewed_by?: number | null
+  reviewed_at?: Date | string | null
   kb_article_tags?: Prisma.kb_article_tagsUncheckedCreateNestedManyWithoutKb_articlesInput
   kb_deflections?: Prisma.kb_deflectionsUncheckedCreateNestedManyWithoutKb_articlesInput
   kb_feedback?: Prisma.kb_feedbackUncheckedCreateNestedManyWithoutKb_articlesInput
@@ -872,6 +1104,10 @@ export type kb_articlesUpdateWithoutKb_commentsInput = {
   views?: Prisma.IntFieldUpdateOperationsInput | number
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.Enumkb_status_enumFieldUpdateOperationsInput | $Enums.kb_status_enum
+  reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  users_kb_articles_created_byTousers?: Prisma.usersUpdateOneWithoutKb_articles_kb_articles_created_byTousersNestedInput
+  users_kb_articles_reviewed_byTousers?: Prisma.usersUpdateOneWithoutKb_articles_kb_articles_reviewed_byTousersNestedInput
   kb_article_tags?: Prisma.kb_article_tagsUpdateManyWithoutKb_articlesNestedInput
   categories?: Prisma.categoriesUpdateOneRequiredWithoutKb_articlesNestedInput
   tickets_kb_articles_source_ticket_idTotickets?: Prisma.ticketsUpdateOneWithoutKb_articles_kb_articles_source_ticket_idToticketsNestedInput
@@ -890,6 +1126,10 @@ export type kb_articlesUncheckedUpdateWithoutKb_commentsInput = {
   source_ticket_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.Enumkb_status_enumFieldUpdateOperationsInput | $Enums.kb_status_enum
+  created_by?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  reviewed_by?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   kb_article_tags?: Prisma.kb_article_tagsUncheckedUpdateManyWithoutKb_articlesNestedInput
   kb_deflections?: Prisma.kb_deflectionsUncheckedUpdateManyWithoutKb_articlesNestedInput
   kb_feedback?: Prisma.kb_feedbackUncheckedUpdateManyWithoutKb_articlesNestedInput
@@ -903,6 +1143,10 @@ export type kb_articlesCreateWithoutKb_deflectionsInput = {
   views?: number
   created_at?: Date | string
   updated_at?: Date | string
+  status?: $Enums.kb_status_enum
+  reviewed_at?: Date | string | null
+  users_kb_articles_created_byTousers?: Prisma.usersCreateNestedOneWithoutKb_articles_kb_articles_created_byTousersInput
+  users_kb_articles_reviewed_byTousers?: Prisma.usersCreateNestedOneWithoutKb_articles_kb_articles_reviewed_byTousersInput
   kb_article_tags?: Prisma.kb_article_tagsCreateNestedManyWithoutKb_articlesInput
   categories: Prisma.categoriesCreateNestedOneWithoutKb_articlesInput
   tickets_kb_articles_source_ticket_idTotickets?: Prisma.ticketsCreateNestedOneWithoutKb_articles_kb_articles_source_ticket_idToticketsInput
@@ -921,6 +1165,10 @@ export type kb_articlesUncheckedCreateWithoutKb_deflectionsInput = {
   source_ticket_id?: number | null
   created_at?: Date | string
   updated_at?: Date | string
+  status?: $Enums.kb_status_enum
+  created_by?: number | null
+  reviewed_by?: number | null
+  reviewed_at?: Date | string | null
   kb_article_tags?: Prisma.kb_article_tagsUncheckedCreateNestedManyWithoutKb_articlesInput
   kb_comments?: Prisma.kb_commentsUncheckedCreateNestedManyWithoutKb_articlesInput
   kb_feedback?: Prisma.kb_feedbackUncheckedCreateNestedManyWithoutKb_articlesInput
@@ -950,6 +1198,10 @@ export type kb_articlesUpdateWithoutKb_deflectionsInput = {
   views?: Prisma.IntFieldUpdateOperationsInput | number
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.Enumkb_status_enumFieldUpdateOperationsInput | $Enums.kb_status_enum
+  reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  users_kb_articles_created_byTousers?: Prisma.usersUpdateOneWithoutKb_articles_kb_articles_created_byTousersNestedInput
+  users_kb_articles_reviewed_byTousers?: Prisma.usersUpdateOneWithoutKb_articles_kb_articles_reviewed_byTousersNestedInput
   kb_article_tags?: Prisma.kb_article_tagsUpdateManyWithoutKb_articlesNestedInput
   categories?: Prisma.categoriesUpdateOneRequiredWithoutKb_articlesNestedInput
   tickets_kb_articles_source_ticket_idTotickets?: Prisma.ticketsUpdateOneWithoutKb_articles_kb_articles_source_ticket_idToticketsNestedInput
@@ -968,6 +1220,10 @@ export type kb_articlesUncheckedUpdateWithoutKb_deflectionsInput = {
   source_ticket_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.Enumkb_status_enumFieldUpdateOperationsInput | $Enums.kb_status_enum
+  created_by?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  reviewed_by?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   kb_article_tags?: Prisma.kb_article_tagsUncheckedUpdateManyWithoutKb_articlesNestedInput
   kb_comments?: Prisma.kb_commentsUncheckedUpdateManyWithoutKb_articlesNestedInput
   kb_feedback?: Prisma.kb_feedbackUncheckedUpdateManyWithoutKb_articlesNestedInput
@@ -981,6 +1237,10 @@ export type kb_articlesCreateWithoutKb_feedbackInput = {
   views?: number
   created_at?: Date | string
   updated_at?: Date | string
+  status?: $Enums.kb_status_enum
+  reviewed_at?: Date | string | null
+  users_kb_articles_created_byTousers?: Prisma.usersCreateNestedOneWithoutKb_articles_kb_articles_created_byTousersInput
+  users_kb_articles_reviewed_byTousers?: Prisma.usersCreateNestedOneWithoutKb_articles_kb_articles_reviewed_byTousersInput
   kb_article_tags?: Prisma.kb_article_tagsCreateNestedManyWithoutKb_articlesInput
   categories: Prisma.categoriesCreateNestedOneWithoutKb_articlesInput
   tickets_kb_articles_source_ticket_idTotickets?: Prisma.ticketsCreateNestedOneWithoutKb_articles_kb_articles_source_ticket_idToticketsInput
@@ -999,6 +1259,10 @@ export type kb_articlesUncheckedCreateWithoutKb_feedbackInput = {
   source_ticket_id?: number | null
   created_at?: Date | string
   updated_at?: Date | string
+  status?: $Enums.kb_status_enum
+  created_by?: number | null
+  reviewed_by?: number | null
+  reviewed_at?: Date | string | null
   kb_article_tags?: Prisma.kb_article_tagsUncheckedCreateNestedManyWithoutKb_articlesInput
   kb_comments?: Prisma.kb_commentsUncheckedCreateNestedManyWithoutKb_articlesInput
   kb_deflections?: Prisma.kb_deflectionsUncheckedCreateNestedManyWithoutKb_articlesInput
@@ -1028,6 +1292,10 @@ export type kb_articlesUpdateWithoutKb_feedbackInput = {
   views?: Prisma.IntFieldUpdateOperationsInput | number
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.Enumkb_status_enumFieldUpdateOperationsInput | $Enums.kb_status_enum
+  reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  users_kb_articles_created_byTousers?: Prisma.usersUpdateOneWithoutKb_articles_kb_articles_created_byTousersNestedInput
+  users_kb_articles_reviewed_byTousers?: Prisma.usersUpdateOneWithoutKb_articles_kb_articles_reviewed_byTousersNestedInput
   kb_article_tags?: Prisma.kb_article_tagsUpdateManyWithoutKb_articlesNestedInput
   categories?: Prisma.categoriesUpdateOneRequiredWithoutKb_articlesNestedInput
   tickets_kb_articles_source_ticket_idTotickets?: Prisma.ticketsUpdateOneWithoutKb_articles_kb_articles_source_ticket_idToticketsNestedInput
@@ -1046,6 +1314,10 @@ export type kb_articlesUncheckedUpdateWithoutKb_feedbackInput = {
   source_ticket_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.Enumkb_status_enumFieldUpdateOperationsInput | $Enums.kb_status_enum
+  created_by?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  reviewed_by?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   kb_article_tags?: Prisma.kb_article_tagsUncheckedUpdateManyWithoutKb_articlesNestedInput
   kb_comments?: Prisma.kb_commentsUncheckedUpdateManyWithoutKb_articlesNestedInput
   kb_deflections?: Prisma.kb_deflectionsUncheckedUpdateManyWithoutKb_articlesNestedInput
@@ -1059,6 +1331,10 @@ export type kb_articlesCreateWithoutKb_stepsInput = {
   views?: number
   created_at?: Date | string
   updated_at?: Date | string
+  status?: $Enums.kb_status_enum
+  reviewed_at?: Date | string | null
+  users_kb_articles_created_byTousers?: Prisma.usersCreateNestedOneWithoutKb_articles_kb_articles_created_byTousersInput
+  users_kb_articles_reviewed_byTousers?: Prisma.usersCreateNestedOneWithoutKb_articles_kb_articles_reviewed_byTousersInput
   kb_article_tags?: Prisma.kb_article_tagsCreateNestedManyWithoutKb_articlesInput
   categories: Prisma.categoriesCreateNestedOneWithoutKb_articlesInput
   tickets_kb_articles_source_ticket_idTotickets?: Prisma.ticketsCreateNestedOneWithoutKb_articles_kb_articles_source_ticket_idToticketsInput
@@ -1077,6 +1353,10 @@ export type kb_articlesUncheckedCreateWithoutKb_stepsInput = {
   source_ticket_id?: number | null
   created_at?: Date | string
   updated_at?: Date | string
+  status?: $Enums.kb_status_enum
+  created_by?: number | null
+  reviewed_by?: number | null
+  reviewed_at?: Date | string | null
   kb_article_tags?: Prisma.kb_article_tagsUncheckedCreateNestedManyWithoutKb_articlesInput
   kb_comments?: Prisma.kb_commentsUncheckedCreateNestedManyWithoutKb_articlesInput
   kb_deflections?: Prisma.kb_deflectionsUncheckedCreateNestedManyWithoutKb_articlesInput
@@ -1106,6 +1386,10 @@ export type kb_articlesUpdateWithoutKb_stepsInput = {
   views?: Prisma.IntFieldUpdateOperationsInput | number
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.Enumkb_status_enumFieldUpdateOperationsInput | $Enums.kb_status_enum
+  reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  users_kb_articles_created_byTousers?: Prisma.usersUpdateOneWithoutKb_articles_kb_articles_created_byTousersNestedInput
+  users_kb_articles_reviewed_byTousers?: Prisma.usersUpdateOneWithoutKb_articles_kb_articles_reviewed_byTousersNestedInput
   kb_article_tags?: Prisma.kb_article_tagsUpdateManyWithoutKb_articlesNestedInput
   categories?: Prisma.categoriesUpdateOneRequiredWithoutKb_articlesNestedInput
   tickets_kb_articles_source_ticket_idTotickets?: Prisma.ticketsUpdateOneWithoutKb_articles_kb_articles_source_ticket_idToticketsNestedInput
@@ -1124,6 +1408,10 @@ export type kb_articlesUncheckedUpdateWithoutKb_stepsInput = {
   source_ticket_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.Enumkb_status_enumFieldUpdateOperationsInput | $Enums.kb_status_enum
+  created_by?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  reviewed_by?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   kb_article_tags?: Prisma.kb_article_tagsUncheckedUpdateManyWithoutKb_articlesNestedInput
   kb_comments?: Prisma.kb_commentsUncheckedUpdateManyWithoutKb_articlesNestedInput
   kb_deflections?: Prisma.kb_deflectionsUncheckedUpdateManyWithoutKb_articlesNestedInput
@@ -1137,6 +1425,10 @@ export type kb_articlesCreateWithoutTickets_kb_articles_source_ticket_idToticket
   views?: number
   created_at?: Date | string
   updated_at?: Date | string
+  status?: $Enums.kb_status_enum
+  reviewed_at?: Date | string | null
+  users_kb_articles_created_byTousers?: Prisma.usersCreateNestedOneWithoutKb_articles_kb_articles_created_byTousersInput
+  users_kb_articles_reviewed_byTousers?: Prisma.usersCreateNestedOneWithoutKb_articles_kb_articles_reviewed_byTousersInput
   kb_article_tags?: Prisma.kb_article_tagsCreateNestedManyWithoutKb_articlesInput
   categories: Prisma.categoriesCreateNestedOneWithoutKb_articlesInput
   kb_comments?: Prisma.kb_commentsCreateNestedManyWithoutKb_articlesInput
@@ -1154,6 +1446,10 @@ export type kb_articlesUncheckedCreateWithoutTickets_kb_articles_source_ticket_i
   views?: number
   created_at?: Date | string
   updated_at?: Date | string
+  status?: $Enums.kb_status_enum
+  created_by?: number | null
+  reviewed_by?: number | null
+  reviewed_at?: Date | string | null
   kb_article_tags?: Prisma.kb_article_tagsUncheckedCreateNestedManyWithoutKb_articlesInput
   kb_comments?: Prisma.kb_commentsUncheckedCreateNestedManyWithoutKb_articlesInput
   kb_deflections?: Prisma.kb_deflectionsUncheckedCreateNestedManyWithoutKb_articlesInput
@@ -1173,6 +1469,10 @@ export type kb_articlesCreateWithoutTickets_tickets_ai_suggested_kb_idTokb_artic
   views?: number
   created_at?: Date | string
   updated_at?: Date | string
+  status?: $Enums.kb_status_enum
+  reviewed_at?: Date | string | null
+  users_kb_articles_created_byTousers?: Prisma.usersCreateNestedOneWithoutKb_articles_kb_articles_created_byTousersInput
+  users_kb_articles_reviewed_byTousers?: Prisma.usersCreateNestedOneWithoutKb_articles_kb_articles_reviewed_byTousersInput
   kb_article_tags?: Prisma.kb_article_tagsCreateNestedManyWithoutKb_articlesInput
   categories: Prisma.categoriesCreateNestedOneWithoutKb_articlesInput
   tickets_kb_articles_source_ticket_idTotickets?: Prisma.ticketsCreateNestedOneWithoutKb_articles_kb_articles_source_ticket_idToticketsInput
@@ -1191,6 +1491,10 @@ export type kb_articlesUncheckedCreateWithoutTickets_tickets_ai_suggested_kb_idT
   source_ticket_id?: number | null
   created_at?: Date | string
   updated_at?: Date | string
+  status?: $Enums.kb_status_enum
+  created_by?: number | null
+  reviewed_by?: number | null
+  reviewed_at?: Date | string | null
   kb_article_tags?: Prisma.kb_article_tagsUncheckedCreateNestedManyWithoutKb_articlesInput
   kb_comments?: Prisma.kb_commentsUncheckedCreateNestedManyWithoutKb_articlesInput
   kb_deflections?: Prisma.kb_deflectionsUncheckedCreateNestedManyWithoutKb_articlesInput
@@ -1220,6 +1524,10 @@ export type kb_articlesUpdateWithoutTickets_kb_articles_source_ticket_idToticket
   views?: Prisma.IntFieldUpdateOperationsInput | number
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.Enumkb_status_enumFieldUpdateOperationsInput | $Enums.kb_status_enum
+  reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  users_kb_articles_created_byTousers?: Prisma.usersUpdateOneWithoutKb_articles_kb_articles_created_byTousersNestedInput
+  users_kb_articles_reviewed_byTousers?: Prisma.usersUpdateOneWithoutKb_articles_kb_articles_reviewed_byTousersNestedInput
   kb_article_tags?: Prisma.kb_article_tagsUpdateManyWithoutKb_articlesNestedInput
   categories?: Prisma.categoriesUpdateOneRequiredWithoutKb_articlesNestedInput
   kb_comments?: Prisma.kb_commentsUpdateManyWithoutKb_articlesNestedInput
@@ -1237,6 +1545,10 @@ export type kb_articlesUncheckedUpdateWithoutTickets_kb_articles_source_ticket_i
   views?: Prisma.IntFieldUpdateOperationsInput | number
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.Enumkb_status_enumFieldUpdateOperationsInput | $Enums.kb_status_enum
+  created_by?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  reviewed_by?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   kb_article_tags?: Prisma.kb_article_tagsUncheckedUpdateManyWithoutKb_articlesNestedInput
   kb_comments?: Prisma.kb_commentsUncheckedUpdateManyWithoutKb_articlesNestedInput
   kb_deflections?: Prisma.kb_deflectionsUncheckedUpdateManyWithoutKb_articlesNestedInput
@@ -1262,6 +1574,10 @@ export type kb_articlesUpdateWithoutTickets_tickets_ai_suggested_kb_idTokb_artic
   views?: Prisma.IntFieldUpdateOperationsInput | number
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.Enumkb_status_enumFieldUpdateOperationsInput | $Enums.kb_status_enum
+  reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  users_kb_articles_created_byTousers?: Prisma.usersUpdateOneWithoutKb_articles_kb_articles_created_byTousersNestedInput
+  users_kb_articles_reviewed_byTousers?: Prisma.usersUpdateOneWithoutKb_articles_kb_articles_reviewed_byTousersNestedInput
   kb_article_tags?: Prisma.kb_article_tagsUpdateManyWithoutKb_articlesNestedInput
   categories?: Prisma.categoriesUpdateOneRequiredWithoutKb_articlesNestedInput
   tickets_kb_articles_source_ticket_idTotickets?: Prisma.ticketsUpdateOneWithoutKb_articles_kb_articles_source_ticket_idToticketsNestedInput
@@ -1280,11 +1596,145 @@ export type kb_articlesUncheckedUpdateWithoutTickets_tickets_ai_suggested_kb_idT
   source_ticket_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.Enumkb_status_enumFieldUpdateOperationsInput | $Enums.kb_status_enum
+  created_by?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  reviewed_by?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   kb_article_tags?: Prisma.kb_article_tagsUncheckedUpdateManyWithoutKb_articlesNestedInput
   kb_comments?: Prisma.kb_commentsUncheckedUpdateManyWithoutKb_articlesNestedInput
   kb_deflections?: Prisma.kb_deflectionsUncheckedUpdateManyWithoutKb_articlesNestedInput
   kb_feedback?: Prisma.kb_feedbackUncheckedUpdateManyWithoutKb_articlesNestedInput
   kb_steps?: Prisma.kb_stepsUncheckedUpdateManyWithoutKb_articlesNestedInput
+}
+
+export type kb_articlesCreateWithoutUsers_kb_articles_created_byTousersInput = {
+  title: string
+  summary?: string | null
+  views?: number
+  created_at?: Date | string
+  updated_at?: Date | string
+  status?: $Enums.kb_status_enum
+  reviewed_at?: Date | string | null
+  users_kb_articles_reviewed_byTousers?: Prisma.usersCreateNestedOneWithoutKb_articles_kb_articles_reviewed_byTousersInput
+  kb_article_tags?: Prisma.kb_article_tagsCreateNestedManyWithoutKb_articlesInput
+  categories: Prisma.categoriesCreateNestedOneWithoutKb_articlesInput
+  tickets_kb_articles_source_ticket_idTotickets?: Prisma.ticketsCreateNestedOneWithoutKb_articles_kb_articles_source_ticket_idToticketsInput
+  kb_comments?: Prisma.kb_commentsCreateNestedManyWithoutKb_articlesInput
+  kb_deflections?: Prisma.kb_deflectionsCreateNestedManyWithoutKb_articlesInput
+  kb_feedback?: Prisma.kb_feedbackCreateNestedManyWithoutKb_articlesInput
+  kb_steps?: Prisma.kb_stepsCreateNestedManyWithoutKb_articlesInput
+  tickets_tickets_ai_suggested_kb_idTokb_articles?: Prisma.ticketsCreateNestedManyWithoutKb_articles_tickets_ai_suggested_kb_idTokb_articlesInput
+}
+
+export type kb_articlesUncheckedCreateWithoutUsers_kb_articles_created_byTousersInput = {
+  id?: number
+  category_id: number
+  title: string
+  summary?: string | null
+  views?: number
+  source_ticket_id?: number | null
+  created_at?: Date | string
+  updated_at?: Date | string
+  status?: $Enums.kb_status_enum
+  reviewed_by?: number | null
+  reviewed_at?: Date | string | null
+  kb_article_tags?: Prisma.kb_article_tagsUncheckedCreateNestedManyWithoutKb_articlesInput
+  kb_comments?: Prisma.kb_commentsUncheckedCreateNestedManyWithoutKb_articlesInput
+  kb_deflections?: Prisma.kb_deflectionsUncheckedCreateNestedManyWithoutKb_articlesInput
+  kb_feedback?: Prisma.kb_feedbackUncheckedCreateNestedManyWithoutKb_articlesInput
+  kb_steps?: Prisma.kb_stepsUncheckedCreateNestedManyWithoutKb_articlesInput
+  tickets_tickets_ai_suggested_kb_idTokb_articles?: Prisma.ticketsUncheckedCreateNestedManyWithoutKb_articles_tickets_ai_suggested_kb_idTokb_articlesInput
+}
+
+export type kb_articlesCreateOrConnectWithoutUsers_kb_articles_created_byTousersInput = {
+  where: Prisma.kb_articlesWhereUniqueInput
+  create: Prisma.XOR<Prisma.kb_articlesCreateWithoutUsers_kb_articles_created_byTousersInput, Prisma.kb_articlesUncheckedCreateWithoutUsers_kb_articles_created_byTousersInput>
+}
+
+export type kb_articlesCreateManyUsers_kb_articles_created_byTousersInputEnvelope = {
+  data: Prisma.kb_articlesCreateManyUsers_kb_articles_created_byTousersInput | Prisma.kb_articlesCreateManyUsers_kb_articles_created_byTousersInput[]
+  skipDuplicates?: boolean
+}
+
+export type kb_articlesCreateWithoutUsers_kb_articles_reviewed_byTousersInput = {
+  title: string
+  summary?: string | null
+  views?: number
+  created_at?: Date | string
+  updated_at?: Date | string
+  status?: $Enums.kb_status_enum
+  reviewed_at?: Date | string | null
+  users_kb_articles_created_byTousers?: Prisma.usersCreateNestedOneWithoutKb_articles_kb_articles_created_byTousersInput
+  kb_article_tags?: Prisma.kb_article_tagsCreateNestedManyWithoutKb_articlesInput
+  categories: Prisma.categoriesCreateNestedOneWithoutKb_articlesInput
+  tickets_kb_articles_source_ticket_idTotickets?: Prisma.ticketsCreateNestedOneWithoutKb_articles_kb_articles_source_ticket_idToticketsInput
+  kb_comments?: Prisma.kb_commentsCreateNestedManyWithoutKb_articlesInput
+  kb_deflections?: Prisma.kb_deflectionsCreateNestedManyWithoutKb_articlesInput
+  kb_feedback?: Prisma.kb_feedbackCreateNestedManyWithoutKb_articlesInput
+  kb_steps?: Prisma.kb_stepsCreateNestedManyWithoutKb_articlesInput
+  tickets_tickets_ai_suggested_kb_idTokb_articles?: Prisma.ticketsCreateNestedManyWithoutKb_articles_tickets_ai_suggested_kb_idTokb_articlesInput
+}
+
+export type kb_articlesUncheckedCreateWithoutUsers_kb_articles_reviewed_byTousersInput = {
+  id?: number
+  category_id: number
+  title: string
+  summary?: string | null
+  views?: number
+  source_ticket_id?: number | null
+  created_at?: Date | string
+  updated_at?: Date | string
+  status?: $Enums.kb_status_enum
+  created_by?: number | null
+  reviewed_at?: Date | string | null
+  kb_article_tags?: Prisma.kb_article_tagsUncheckedCreateNestedManyWithoutKb_articlesInput
+  kb_comments?: Prisma.kb_commentsUncheckedCreateNestedManyWithoutKb_articlesInput
+  kb_deflections?: Prisma.kb_deflectionsUncheckedCreateNestedManyWithoutKb_articlesInput
+  kb_feedback?: Prisma.kb_feedbackUncheckedCreateNestedManyWithoutKb_articlesInput
+  kb_steps?: Prisma.kb_stepsUncheckedCreateNestedManyWithoutKb_articlesInput
+  tickets_tickets_ai_suggested_kb_idTokb_articles?: Prisma.ticketsUncheckedCreateNestedManyWithoutKb_articles_tickets_ai_suggested_kb_idTokb_articlesInput
+}
+
+export type kb_articlesCreateOrConnectWithoutUsers_kb_articles_reviewed_byTousersInput = {
+  where: Prisma.kb_articlesWhereUniqueInput
+  create: Prisma.XOR<Prisma.kb_articlesCreateWithoutUsers_kb_articles_reviewed_byTousersInput, Prisma.kb_articlesUncheckedCreateWithoutUsers_kb_articles_reviewed_byTousersInput>
+}
+
+export type kb_articlesCreateManyUsers_kb_articles_reviewed_byTousersInputEnvelope = {
+  data: Prisma.kb_articlesCreateManyUsers_kb_articles_reviewed_byTousersInput | Prisma.kb_articlesCreateManyUsers_kb_articles_reviewed_byTousersInput[]
+  skipDuplicates?: boolean
+}
+
+export type kb_articlesUpsertWithWhereUniqueWithoutUsers_kb_articles_created_byTousersInput = {
+  where: Prisma.kb_articlesWhereUniqueInput
+  update: Prisma.XOR<Prisma.kb_articlesUpdateWithoutUsers_kb_articles_created_byTousersInput, Prisma.kb_articlesUncheckedUpdateWithoutUsers_kb_articles_created_byTousersInput>
+  create: Prisma.XOR<Prisma.kb_articlesCreateWithoutUsers_kb_articles_created_byTousersInput, Prisma.kb_articlesUncheckedCreateWithoutUsers_kb_articles_created_byTousersInput>
+}
+
+export type kb_articlesUpdateWithWhereUniqueWithoutUsers_kb_articles_created_byTousersInput = {
+  where: Prisma.kb_articlesWhereUniqueInput
+  data: Prisma.XOR<Prisma.kb_articlesUpdateWithoutUsers_kb_articles_created_byTousersInput, Prisma.kb_articlesUncheckedUpdateWithoutUsers_kb_articles_created_byTousersInput>
+}
+
+export type kb_articlesUpdateManyWithWhereWithoutUsers_kb_articles_created_byTousersInput = {
+  where: Prisma.kb_articlesScalarWhereInput
+  data: Prisma.XOR<Prisma.kb_articlesUpdateManyMutationInput, Prisma.kb_articlesUncheckedUpdateManyWithoutUsers_kb_articles_created_byTousersInput>
+}
+
+export type kb_articlesUpsertWithWhereUniqueWithoutUsers_kb_articles_reviewed_byTousersInput = {
+  where: Prisma.kb_articlesWhereUniqueInput
+  update: Prisma.XOR<Prisma.kb_articlesUpdateWithoutUsers_kb_articles_reviewed_byTousersInput, Prisma.kb_articlesUncheckedUpdateWithoutUsers_kb_articles_reviewed_byTousersInput>
+  create: Prisma.XOR<Prisma.kb_articlesCreateWithoutUsers_kb_articles_reviewed_byTousersInput, Prisma.kb_articlesUncheckedCreateWithoutUsers_kb_articles_reviewed_byTousersInput>
+}
+
+export type kb_articlesUpdateWithWhereUniqueWithoutUsers_kb_articles_reviewed_byTousersInput = {
+  where: Prisma.kb_articlesWhereUniqueInput
+  data: Prisma.XOR<Prisma.kb_articlesUpdateWithoutUsers_kb_articles_reviewed_byTousersInput, Prisma.kb_articlesUncheckedUpdateWithoutUsers_kb_articles_reviewed_byTousersInput>
+}
+
+export type kb_articlesUpdateManyWithWhereWithoutUsers_kb_articles_reviewed_byTousersInput = {
+  where: Prisma.kb_articlesScalarWhereInput
+  data: Prisma.XOR<Prisma.kb_articlesUpdateManyMutationInput, Prisma.kb_articlesUncheckedUpdateManyWithoutUsers_kb_articles_reviewed_byTousersInput>
 }
 
 export type kb_articlesCreateManyCategoriesInput = {
@@ -1295,6 +1745,10 @@ export type kb_articlesCreateManyCategoriesInput = {
   source_ticket_id?: number | null
   created_at?: Date | string
   updated_at?: Date | string
+  status?: $Enums.kb_status_enum
+  created_by?: number | null
+  reviewed_by?: number | null
+  reviewed_at?: Date | string | null
 }
 
 export type kb_articlesUpdateWithoutCategoriesInput = {
@@ -1303,6 +1757,10 @@ export type kb_articlesUpdateWithoutCategoriesInput = {
   views?: Prisma.IntFieldUpdateOperationsInput | number
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.Enumkb_status_enumFieldUpdateOperationsInput | $Enums.kb_status_enum
+  reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  users_kb_articles_created_byTousers?: Prisma.usersUpdateOneWithoutKb_articles_kb_articles_created_byTousersNestedInput
+  users_kb_articles_reviewed_byTousers?: Prisma.usersUpdateOneWithoutKb_articles_kb_articles_reviewed_byTousersNestedInput
   kb_article_tags?: Prisma.kb_article_tagsUpdateManyWithoutKb_articlesNestedInput
   tickets_kb_articles_source_ticket_idTotickets?: Prisma.ticketsUpdateOneWithoutKb_articles_kb_articles_source_ticket_idToticketsNestedInput
   kb_comments?: Prisma.kb_commentsUpdateManyWithoutKb_articlesNestedInput
@@ -1320,6 +1778,10 @@ export type kb_articlesUncheckedUpdateWithoutCategoriesInput = {
   source_ticket_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.Enumkb_status_enumFieldUpdateOperationsInput | $Enums.kb_status_enum
+  created_by?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  reviewed_by?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   kb_article_tags?: Prisma.kb_article_tagsUncheckedUpdateManyWithoutKb_articlesNestedInput
   kb_comments?: Prisma.kb_commentsUncheckedUpdateManyWithoutKb_articlesNestedInput
   kb_deflections?: Prisma.kb_deflectionsUncheckedUpdateManyWithoutKb_articlesNestedInput
@@ -1336,6 +1798,144 @@ export type kb_articlesUncheckedUpdateManyWithoutCategoriesInput = {
   source_ticket_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.Enumkb_status_enumFieldUpdateOperationsInput | $Enums.kb_status_enum
+  created_by?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  reviewed_by?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
+export type kb_articlesCreateManyUsers_kb_articles_created_byTousersInput = {
+  id?: number
+  category_id: number
+  title: string
+  summary?: string | null
+  views?: number
+  source_ticket_id?: number | null
+  created_at?: Date | string
+  updated_at?: Date | string
+  status?: $Enums.kb_status_enum
+  reviewed_by?: number | null
+  reviewed_at?: Date | string | null
+}
+
+export type kb_articlesCreateManyUsers_kb_articles_reviewed_byTousersInput = {
+  id?: number
+  category_id: number
+  title: string
+  summary?: string | null
+  views?: number
+  source_ticket_id?: number | null
+  created_at?: Date | string
+  updated_at?: Date | string
+  status?: $Enums.kb_status_enum
+  created_by?: number | null
+  reviewed_at?: Date | string | null
+}
+
+export type kb_articlesUpdateWithoutUsers_kb_articles_created_byTousersInput = {
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  views?: Prisma.IntFieldUpdateOperationsInput | number
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.Enumkb_status_enumFieldUpdateOperationsInput | $Enums.kb_status_enum
+  reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  users_kb_articles_reviewed_byTousers?: Prisma.usersUpdateOneWithoutKb_articles_kb_articles_reviewed_byTousersNestedInput
+  kb_article_tags?: Prisma.kb_article_tagsUpdateManyWithoutKb_articlesNestedInput
+  categories?: Prisma.categoriesUpdateOneRequiredWithoutKb_articlesNestedInput
+  tickets_kb_articles_source_ticket_idTotickets?: Prisma.ticketsUpdateOneWithoutKb_articles_kb_articles_source_ticket_idToticketsNestedInput
+  kb_comments?: Prisma.kb_commentsUpdateManyWithoutKb_articlesNestedInput
+  kb_deflections?: Prisma.kb_deflectionsUpdateManyWithoutKb_articlesNestedInput
+  kb_feedback?: Prisma.kb_feedbackUpdateManyWithoutKb_articlesNestedInput
+  kb_steps?: Prisma.kb_stepsUpdateManyWithoutKb_articlesNestedInput
+  tickets_tickets_ai_suggested_kb_idTokb_articles?: Prisma.ticketsUpdateManyWithoutKb_articles_tickets_ai_suggested_kb_idTokb_articlesNestedInput
+}
+
+export type kb_articlesUncheckedUpdateWithoutUsers_kb_articles_created_byTousersInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  category_id?: Prisma.IntFieldUpdateOperationsInput | number
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  views?: Prisma.IntFieldUpdateOperationsInput | number
+  source_ticket_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.Enumkb_status_enumFieldUpdateOperationsInput | $Enums.kb_status_enum
+  reviewed_by?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  kb_article_tags?: Prisma.kb_article_tagsUncheckedUpdateManyWithoutKb_articlesNestedInput
+  kb_comments?: Prisma.kb_commentsUncheckedUpdateManyWithoutKb_articlesNestedInput
+  kb_deflections?: Prisma.kb_deflectionsUncheckedUpdateManyWithoutKb_articlesNestedInput
+  kb_feedback?: Prisma.kb_feedbackUncheckedUpdateManyWithoutKb_articlesNestedInput
+  kb_steps?: Prisma.kb_stepsUncheckedUpdateManyWithoutKb_articlesNestedInput
+  tickets_tickets_ai_suggested_kb_idTokb_articles?: Prisma.ticketsUncheckedUpdateManyWithoutKb_articles_tickets_ai_suggested_kb_idTokb_articlesNestedInput
+}
+
+export type kb_articlesUncheckedUpdateManyWithoutUsers_kb_articles_created_byTousersInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  category_id?: Prisma.IntFieldUpdateOperationsInput | number
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  views?: Prisma.IntFieldUpdateOperationsInput | number
+  source_ticket_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.Enumkb_status_enumFieldUpdateOperationsInput | $Enums.kb_status_enum
+  reviewed_by?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
+export type kb_articlesUpdateWithoutUsers_kb_articles_reviewed_byTousersInput = {
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  views?: Prisma.IntFieldUpdateOperationsInput | number
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.Enumkb_status_enumFieldUpdateOperationsInput | $Enums.kb_status_enum
+  reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  users_kb_articles_created_byTousers?: Prisma.usersUpdateOneWithoutKb_articles_kb_articles_created_byTousersNestedInput
+  kb_article_tags?: Prisma.kb_article_tagsUpdateManyWithoutKb_articlesNestedInput
+  categories?: Prisma.categoriesUpdateOneRequiredWithoutKb_articlesNestedInput
+  tickets_kb_articles_source_ticket_idTotickets?: Prisma.ticketsUpdateOneWithoutKb_articles_kb_articles_source_ticket_idToticketsNestedInput
+  kb_comments?: Prisma.kb_commentsUpdateManyWithoutKb_articlesNestedInput
+  kb_deflections?: Prisma.kb_deflectionsUpdateManyWithoutKb_articlesNestedInput
+  kb_feedback?: Prisma.kb_feedbackUpdateManyWithoutKb_articlesNestedInput
+  kb_steps?: Prisma.kb_stepsUpdateManyWithoutKb_articlesNestedInput
+  tickets_tickets_ai_suggested_kb_idTokb_articles?: Prisma.ticketsUpdateManyWithoutKb_articles_tickets_ai_suggested_kb_idTokb_articlesNestedInput
+}
+
+export type kb_articlesUncheckedUpdateWithoutUsers_kb_articles_reviewed_byTousersInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  category_id?: Prisma.IntFieldUpdateOperationsInput | number
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  views?: Prisma.IntFieldUpdateOperationsInput | number
+  source_ticket_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.Enumkb_status_enumFieldUpdateOperationsInput | $Enums.kb_status_enum
+  created_by?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  kb_article_tags?: Prisma.kb_article_tagsUncheckedUpdateManyWithoutKb_articlesNestedInput
+  kb_comments?: Prisma.kb_commentsUncheckedUpdateManyWithoutKb_articlesNestedInput
+  kb_deflections?: Prisma.kb_deflectionsUncheckedUpdateManyWithoutKb_articlesNestedInput
+  kb_feedback?: Prisma.kb_feedbackUncheckedUpdateManyWithoutKb_articlesNestedInput
+  kb_steps?: Prisma.kb_stepsUncheckedUpdateManyWithoutKb_articlesNestedInput
+  tickets_tickets_ai_suggested_kb_idTokb_articles?: Prisma.ticketsUncheckedUpdateManyWithoutKb_articles_tickets_ai_suggested_kb_idTokb_articlesNestedInput
+}
+
+export type kb_articlesUncheckedUpdateManyWithoutUsers_kb_articles_reviewed_byTousersInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  category_id?: Prisma.IntFieldUpdateOperationsInput | number
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  views?: Prisma.IntFieldUpdateOperationsInput | number
+  source_ticket_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.Enumkb_status_enumFieldUpdateOperationsInput | $Enums.kb_status_enum
+  created_by?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 
@@ -1423,6 +2023,12 @@ export type kb_articlesSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   source_ticket_id?: boolean
   created_at?: boolean
   updated_at?: boolean
+  status?: boolean
+  created_by?: boolean
+  reviewed_by?: boolean
+  reviewed_at?: boolean
+  users_kb_articles_created_byTousers?: boolean | Prisma.kb_articles$users_kb_articles_created_byTousersArgs<ExtArgs>
+  users_kb_articles_reviewed_byTousers?: boolean | Prisma.kb_articles$users_kb_articles_reviewed_byTousersArgs<ExtArgs>
   kb_article_tags?: boolean | Prisma.kb_articles$kb_article_tagsArgs<ExtArgs>
   categories?: boolean | Prisma.categoriesDefaultArgs<ExtArgs>
   tickets_kb_articles_source_ticket_idTotickets?: boolean | Prisma.kb_articles$tickets_kb_articles_source_ticket_idToticketsArgs<ExtArgs>
@@ -1443,6 +2049,12 @@ export type kb_articlesSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   source_ticket_id?: boolean
   created_at?: boolean
   updated_at?: boolean
+  status?: boolean
+  created_by?: boolean
+  reviewed_by?: boolean
+  reviewed_at?: boolean
+  users_kb_articles_created_byTousers?: boolean | Prisma.kb_articles$users_kb_articles_created_byTousersArgs<ExtArgs>
+  users_kb_articles_reviewed_byTousers?: boolean | Prisma.kb_articles$users_kb_articles_reviewed_byTousersArgs<ExtArgs>
   categories?: boolean | Prisma.categoriesDefaultArgs<ExtArgs>
   tickets_kb_articles_source_ticket_idTotickets?: boolean | Prisma.kb_articles$tickets_kb_articles_source_ticket_idToticketsArgs<ExtArgs>
 }, ExtArgs["result"]["kb_articles"]>
@@ -1456,6 +2068,12 @@ export type kb_articlesSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   source_ticket_id?: boolean
   created_at?: boolean
   updated_at?: boolean
+  status?: boolean
+  created_by?: boolean
+  reviewed_by?: boolean
+  reviewed_at?: boolean
+  users_kb_articles_created_byTousers?: boolean | Prisma.kb_articles$users_kb_articles_created_byTousersArgs<ExtArgs>
+  users_kb_articles_reviewed_byTousers?: boolean | Prisma.kb_articles$users_kb_articles_reviewed_byTousersArgs<ExtArgs>
   categories?: boolean | Prisma.categoriesDefaultArgs<ExtArgs>
   tickets_kb_articles_source_ticket_idTotickets?: boolean | Prisma.kb_articles$tickets_kb_articles_source_ticket_idToticketsArgs<ExtArgs>
 }, ExtArgs["result"]["kb_articles"]>
@@ -1469,10 +2087,16 @@ export type kb_articlesSelectScalar = {
   source_ticket_id?: boolean
   created_at?: boolean
   updated_at?: boolean
+  status?: boolean
+  created_by?: boolean
+  reviewed_by?: boolean
+  reviewed_at?: boolean
 }
 
-export type kb_articlesOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "category_id" | "title" | "summary" | "views" | "source_ticket_id" | "created_at" | "updated_at", ExtArgs["result"]["kb_articles"]>
+export type kb_articlesOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "category_id" | "title" | "summary" | "views" | "source_ticket_id" | "created_at" | "updated_at" | "status" | "created_by" | "reviewed_by" | "reviewed_at", ExtArgs["result"]["kb_articles"]>
 export type kb_articlesInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  users_kb_articles_created_byTousers?: boolean | Prisma.kb_articles$users_kb_articles_created_byTousersArgs<ExtArgs>
+  users_kb_articles_reviewed_byTousers?: boolean | Prisma.kb_articles$users_kb_articles_reviewed_byTousersArgs<ExtArgs>
   kb_article_tags?: boolean | Prisma.kb_articles$kb_article_tagsArgs<ExtArgs>
   categories?: boolean | Prisma.categoriesDefaultArgs<ExtArgs>
   tickets_kb_articles_source_ticket_idTotickets?: boolean | Prisma.kb_articles$tickets_kb_articles_source_ticket_idToticketsArgs<ExtArgs>
@@ -1484,10 +2108,14 @@ export type kb_articlesInclude<ExtArgs extends runtime.Types.Extensions.Internal
   _count?: boolean | Prisma.Kb_articlesCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type kb_articlesIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  users_kb_articles_created_byTousers?: boolean | Prisma.kb_articles$users_kb_articles_created_byTousersArgs<ExtArgs>
+  users_kb_articles_reviewed_byTousers?: boolean | Prisma.kb_articles$users_kb_articles_reviewed_byTousersArgs<ExtArgs>
   categories?: boolean | Prisma.categoriesDefaultArgs<ExtArgs>
   tickets_kb_articles_source_ticket_idTotickets?: boolean | Prisma.kb_articles$tickets_kb_articles_source_ticket_idToticketsArgs<ExtArgs>
 }
 export type kb_articlesIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  users_kb_articles_created_byTousers?: boolean | Prisma.kb_articles$users_kb_articles_created_byTousersArgs<ExtArgs>
+  users_kb_articles_reviewed_byTousers?: boolean | Prisma.kb_articles$users_kb_articles_reviewed_byTousersArgs<ExtArgs>
   categories?: boolean | Prisma.categoriesDefaultArgs<ExtArgs>
   tickets_kb_articles_source_ticket_idTotickets?: boolean | Prisma.kb_articles$tickets_kb_articles_source_ticket_idToticketsArgs<ExtArgs>
 }
@@ -1495,6 +2123,8 @@ export type kb_articlesIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.
 export type $kb_articlesPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "kb_articles"
   objects: {
+    users_kb_articles_created_byTousers: Prisma.$usersPayload<ExtArgs> | null
+    users_kb_articles_reviewed_byTousers: Prisma.$usersPayload<ExtArgs> | null
     kb_article_tags: Prisma.$kb_article_tagsPayload<ExtArgs>[]
     categories: Prisma.$categoriesPayload<ExtArgs>
     tickets_kb_articles_source_ticket_idTotickets: Prisma.$ticketsPayload<ExtArgs> | null
@@ -1513,6 +2143,10 @@ export type $kb_articlesPayload<ExtArgs extends runtime.Types.Extensions.Interna
     source_ticket_id: number | null
     created_at: Date
     updated_at: Date
+    status: $Enums.kb_status_enum
+    created_by: number | null
+    reviewed_by: number | null
+    reviewed_at: Date | null
   }, ExtArgs["result"]["kb_articles"]>
   composites: {}
 }
@@ -1907,6 +2541,8 @@ readonly fields: kb_articlesFieldRefs;
  */
 export interface Prisma__kb_articlesClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  users_kb_articles_created_byTousers<T extends Prisma.kb_articles$users_kb_articles_created_byTousersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.kb_articles$users_kb_articles_created_byTousersArgs<ExtArgs>>): Prisma.Prisma__usersClient<runtime.Types.Result.GetResult<Prisma.$usersPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  users_kb_articles_reviewed_byTousers<T extends Prisma.kb_articles$users_kb_articles_reviewed_byTousersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.kb_articles$users_kb_articles_reviewed_byTousersArgs<ExtArgs>>): Prisma.Prisma__usersClient<runtime.Types.Result.GetResult<Prisma.$usersPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   kb_article_tags<T extends Prisma.kb_articles$kb_article_tagsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.kb_articles$kb_article_tagsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$kb_article_tagsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   categories<T extends Prisma.categoriesDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.categoriesDefaultArgs<ExtArgs>>): Prisma.Prisma__categoriesClient<runtime.Types.Result.GetResult<Prisma.$categoriesPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   tickets_kb_articles_source_ticket_idTotickets<T extends Prisma.kb_articles$tickets_kb_articles_source_ticket_idToticketsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.kb_articles$tickets_kb_articles_source_ticket_idToticketsArgs<ExtArgs>>): Prisma.Prisma__ticketsClient<runtime.Types.Result.GetResult<Prisma.$ticketsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
@@ -1952,6 +2588,10 @@ export interface kb_articlesFieldRefs {
   readonly source_ticket_id: Prisma.FieldRef<"kb_articles", 'Int'>
   readonly created_at: Prisma.FieldRef<"kb_articles", 'DateTime'>
   readonly updated_at: Prisma.FieldRef<"kb_articles", 'DateTime'>
+  readonly status: Prisma.FieldRef<"kb_articles", 'kb_status_enum'>
+  readonly created_by: Prisma.FieldRef<"kb_articles", 'Int'>
+  readonly reviewed_by: Prisma.FieldRef<"kb_articles", 'Int'>
+  readonly reviewed_at: Prisma.FieldRef<"kb_articles", 'DateTime'>
 }
     
 
@@ -2345,6 +2985,44 @@ export type kb_articlesDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.I
    * Limit how many kb_articles to delete.
    */
   limit?: number
+}
+
+/**
+ * kb_articles.users_kb_articles_created_byTousers
+ */
+export type kb_articles$users_kb_articles_created_byTousersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the users
+   */
+  select?: Prisma.usersSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the users
+   */
+  omit?: Prisma.usersOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.usersInclude<ExtArgs> | null
+  where?: Prisma.usersWhereInput
+}
+
+/**
+ * kb_articles.users_kb_articles_reviewed_byTousers
+ */
+export type kb_articles$users_kb_articles_reviewed_byTousersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the users
+   */
+  select?: Prisma.usersSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the users
+   */
+  omit?: Prisma.usersOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.usersInclude<ExtArgs> | null
+  where?: Prisma.usersWhereInput
 }
 
 /**

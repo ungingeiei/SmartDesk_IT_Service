@@ -13,6 +13,7 @@ export const KB_ARTICLE_INCLUDE = {
   kb_article_tags: { include: { tags: true } },
   kb_steps: true,
   kb_comments: true,
+  users_kb_articles_created_byTousers: { select: { name: true } },
 };
 
 /** Prisma `include` for a tickets row that mapTicket() can fully map. */
@@ -34,6 +35,9 @@ export function mapKbArticle(row) {
     summary: row.summary ?? '',
     updated: formatThaiDate(row.updated_at),
     views: row.views,
+    status: row.status,
+    authorId: row.created_by,
+    authorName: row.users_kb_articles_created_byTousers?.name ?? null,
     tags: (row.kb_article_tags ?? []).map((t) => t.tags.tag),
     steps: (row.kb_steps ?? [])
       .slice()

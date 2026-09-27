@@ -63,6 +63,9 @@ INSERT INTO "kb_articles" ("category_id", "title", "summary", "views", "created_
 (4, 'อีเมลเข้ากล่อง Junk/Spam บ่อยเกินไป', 'วิธีลดการที่อีเมลสำคัญถูกจัดเป็นสแปมผิดพลาด', 83, '2026-08-31 00:00:00+07', '2026-08-31 00:00:00+07'),
 (6, 'ซิงค์ไฟล์ OneDrive ค้างหรือไม่อัปเดต', 'แก้ปัญหาไฟล์ในโฟลเดอร์ OneDrive ไม่ซิงค์ระหว่างเครื่อง', 72, '2026-09-04 00:00:00+07', '2026-09-04 00:00:00+07');
 
+-- Demo articles are already published (new rows default to 'pending').
+UPDATE "kb_articles" SET "status" = 'approved';
+
 
 -- kb_steps
 

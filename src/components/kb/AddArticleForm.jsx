@@ -7,7 +7,8 @@ import Button from '@/components/ui/Button';
 const CONTROL = `rounded-s border border-line bg-surface-alt px-3 py-[9px] text-md text-ink
   outline-none transition-colors placeholder:text-ink-faint focus:border-indigo`;
 
-export default function AddArticleForm({ onSave, onCancel }) {
+/** `needsApproval`: the article will wait for หัวหน้าทีม IT before it is published. */
+export default function AddArticleForm({ onSave, onCancel, needsApproval = false }) {
   const [title, setTitle] = useState('');
   const [cat, setCat] = useState(CATEGORIES[0]);
   const [step, setStep] = useState('');
@@ -45,12 +46,17 @@ export default function AddArticleForm({ onSave, onCancel }) {
         placeholder="วิธีแก้ไข (ขึ้นบรรทัดใหม่สำหรับแต่ละขั้นตอน)"
         className={`${CONTROL} mb-2.5 min-h-[60px] w-full resize-y`}
       />
-      <div className="flex justify-end gap-2">
+      <div className="flex flex-wrap items-center justify-end gap-2">
+        {needsApproval ? (
+          <span className="mr-auto text-sm2 text-ink-faint">
+            บทความจะเผยแพร่หลังหัวหน้าทีม IT อนุมัติ
+          </span>
+        ) : null}
         <Button variant="ghost" onClick={onCancel}>
           ยกเลิก
         </Button>
         <Button onClick={handleSave} disabled={!title.trim() || !step.trim()}>
-          บันทึกบทความ
+          {needsApproval ? 'ส่งให้อนุมัติ' : 'บันทึกบทความ'}
         </Button>
       </div>
     </div>

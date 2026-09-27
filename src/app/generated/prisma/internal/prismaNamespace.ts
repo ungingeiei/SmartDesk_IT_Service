@@ -16,10 +16,10 @@
  */
 
 import * as runtime from "@prisma/client/runtime/library"
-import type * as Prisma from "../models.ts"
-import { type PrismaClient } from "./class.ts"
+import type * as Prisma from "../models"
+import { type PrismaClient } from "./class"
 
-export type * from '../models.ts'
+export type * from '../models'
 
 export type DMMF = typeof runtime.DMMF
 
@@ -1757,7 +1757,11 @@ export const Kb_articlesScalarFieldEnum = {
   views: 'views',
   source_ticket_id: 'source_ticket_id',
   created_at: 'created_at',
-  updated_at: 'updated_at'
+  updated_at: 'updated_at',
+  status: 'status',
+  created_by: 'created_by',
+  reviewed_by: 'reviewed_by',
+  reviewed_at: 'reviewed_at'
 } as const
 
 export type Kb_articlesScalarFieldEnum = (typeof Kb_articlesScalarFieldEnum)[keyof typeof Kb_articlesScalarFieldEnum]
@@ -1988,6 +1992,20 @@ export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel
  * Reference to a field of type 'DateTime[]'
  */
 export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
+    
+
+
+/**
+ * Reference to a field of type 'kb_status_enum'
+ */
+export type Enumkb_status_enumFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'kb_status_enum'>
+    
+
+
+/**
+ * Reference to a field of type 'kb_status_enum[]'
+ */
+export type ListEnumkb_status_enumFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'kb_status_enum[]'>
     
 
 

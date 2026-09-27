@@ -16,14 +16,20 @@ const AppContext = createContext(null);
 
 const SESSION_KEY = 'smartdesk.currentUser';
 
+// Articles already counted as viewed since this page load. Keeps React Strict
+// Mode's double-run effects (and re-opening the same article) from counting twice.
+const viewedArticles = new Set();
+
 const initialState = {
   currentUser: null,
   authReady: false,
 
   users: USERS.map((u) => ({ ...u })),
 
-  // Data is loaded from Prisma APIs after login.
-  kb: [],
+  // Data is loaded from Prisma APIs after login. `kbAll` is every article the
+  // viewer may see, pending ones included; the context exposes the approved
+  // ones as `kb` and the rest as `kbPending` (see `value` below).
+  kbAll: [],
   tickets: [],
 
   deflectedCount: 132,
@@ -59,8 +65,8 @@ const patchJSON = (url, body) => apiRequest('PATCH', url, body);
 /*
  * Load Knowledge Base.
  */
-async function loadKB(dispatch) {
-  const res = await fetch('/api/kb');
+async function loadKB(dispatch, user) {
+  const res = await fetch(`/api/kb?viewerId=${encodeURIComponent(user?.id ?? '')}`);
 
   const data = await res.json().catch(() => ({}));
 
@@ -112,7 +118,7 @@ function reducer(state, action) {
       return {
         ...state,
         currentUser: null,
-        kb: [],
+        kbAll: [],
         tickets: [],
       };
 
@@ -138,7 +144,7 @@ function reducer(state, action) {
     case 'setKB':
       return {
         ...state,
-        kb: action.kb,
+        kbAll: action.kb,
       };
 
     case 'setTickets':
@@ -178,13 +184,29 @@ function reducer(state, action) {
     case 'addArticle':
       return {
         ...state,
-        kb: [action.article, ...state.kb],
+        kbAll: [action.article, ...state.kbAll],
+      };
+
+    case 'setViews':
+      return {
+        ...state,
+        kbAll: state.kbAll.map((article) =>
+          article.id === action.id
+            ? { ...article, views: action.views }
+            : article
+        ),
+      };
+
+    case 'removeArticle':
+      return {
+        ...state,
+        kbAll: state.kbAll.filter((article) => article.id !== action.id),
       };
 
     case 'setArticle':
       return {
         ...state,
-        kb: state.kb.map((article) =>
+        kbAll: state.kbAll.map((article) =>
           article.id === action.article.id
             ? action.article
             : article
@@ -259,7 +281,7 @@ export function AppProvider({ children }) {
     async function hydrate() {
       try {
         const [kbRes] = await Promise.all([
-          fetch('/api/kb'),
+          fetch(`/api/kb?viewerId=${encodeURIComponent(state.currentUser.id ?? '')}`),
         ]);
 
         if (cancelled) return;
@@ -330,7 +352,7 @@ export function AppProvider({ children }) {
           user,
         });
 
-        loadKB(dispatch);
+        loadKB(dispatch, user);
         loadTickets(dispatch, user);
       },
 
@@ -551,6 +573,7 @@ export function AppProvider({ children }) {
         title,
         cat,
         step,
+        user,
       }) => {
         const { ok, data } = await putJSON(
           '/api/kb',
@@ -558,6 +581,7 @@ export function AppProvider({ children }) {
             title,
             cat,
             step,
+            userId: user?.id,
           }
         );
 
@@ -576,10 +600,108 @@ export function AppProvider({ children }) {
         });
 
         showToast(
-          'เพิ่มบทความเรียบร้อยแล้ว'
+          data.article.status === 'approved'
+            ? 'เพิ่มบทความเรียบร้อยแล้ว'
+            : 'ส่งบทความแล้ว รอหัวหน้าทีม IT อนุมัติ'
         );
 
         return data.article;
+      },
+
+      /*
+       * Count one view of a published article
+       */
+      recordView: async (articleId) => {
+        if (viewedArticles.has(articleId)) return;
+        viewedArticles.add(articleId);
+
+        const { ok, data } = await patchJSON(
+          `/api/kb/${articleId}`,
+          {
+            action: 'view',
+          }
+        );
+
+        if (ok) {
+          dispatch({
+            type: 'setViews',
+            id: articleId,
+            views: data.views,
+          });
+        }
+      },
+
+      /*
+       * หัวหน้าทีม IT: approve or reject a pending article
+       */
+      reviewArticle: async (
+        articleId,
+        user,
+        decision
+      ) => {
+        const { ok, data } = await patchJSON(
+          `/api/kb/${articleId}`,
+          {
+            action: decision,
+            userId: user?.id,
+          }
+        );
+
+        if (!ok) {
+          showToast(
+            data.error ||
+              'ดำเนินการไม่สำเร็จ กรุณาลองใหม่'
+          );
+
+          return false;
+        }
+
+        dispatch({
+          type: 'setArticle',
+          article: data.article,
+        });
+
+        showToast(
+          decision === 'approve'
+            ? 'อนุมัติบทความแล้ว'
+            : 'ไม่อนุมัติบทความนี้แล้ว'
+        );
+
+        return true;
+      },
+
+      /*
+       * หัวหน้าทีม IT: delete an article
+       */
+      deleteArticle: async (
+        articleId,
+        user
+      ) => {
+        const { ok, data } = await apiRequest(
+          'DELETE',
+          `/api/kb/${articleId}`,
+          {
+            userId: user?.id,
+          }
+        );
+
+        if (!ok) {
+          showToast(
+            data.error ||
+              'ลบบทความไม่สำเร็จ กรุณาลองใหม่'
+          );
+
+          return false;
+        }
+
+        dispatch({
+          type: 'removeArticle',
+          id: String(articleId),
+        });
+
+        showToast('ลบบทความแล้ว');
+
+        return true;
       },
 
       /*
@@ -960,6 +1082,11 @@ export function AppProvider({ children }) {
   const value = useMemo(
     () => ({
       ...state,
+      // Only approved articles are "the KB": search, related articles and
+      // ticket suggestions all read `kb`, so none of them can surface an
+      // article nobody has approved yet.
+      kb: state.kbAll.filter((a) => a.status === 'approved'),
+      kbPending: state.kbAll.filter((a) => a.status !== 'approved'),
       ...actions,
     }),
     [state, actions]

@@ -10,10 +10,12 @@ import CategoryFilter from '@/components/kb/CategoryFilter';
 import ContributorsCard from '@/components/kb/ContributorsCard';
 import AddArticleForm from '@/components/kb/AddArticleForm';
 import CtaBand from '@/components/kb/CtaBand';
+import PendingArticles from '@/components/kb/PendingArticles';
 import { SearchIcon } from '@/components/icons';
 
 export default function KnowledgeBasePage() {
-  const { kb, currentUser, addArticle } = useApp();
+  const { kb, kbPending, currentUser, addArticle, reviewArticle } = useApp();
+  const isReviewer = currentUser?.role === 'admin';
 
   // Search text and filters are view state, so they live here rather than in the store.
   const [query, setQuery] = useState('');
@@ -28,8 +30,8 @@ export default function KnowledgeBasePage() {
 
   async function handleSave(article) {
     try {
-      await addArticle(article);
-      setShowAddArticle(false);
+      const saved = await addArticle({ ...article, user: currentUser });
+      if (saved) setShowAddArticle(false);
     } catch {
       // addArticle already showed a toast — keep the form open so nothing typed is lost.
     }
@@ -74,8 +76,19 @@ export default function KnowledgeBasePage() {
 
         <div className="min-w-0 flex-1">
           {showAddArticle ? (
-            <AddArticleForm onSave={handleSave} onCancel={() => setShowAddArticle(false)} />
+            <AddArticleForm
+              onSave={handleSave}
+              onCancel={() => setShowAddArticle(false)}
+              needsApproval={!isReviewer}
+            />
           ) : null}
+
+          <PendingArticles
+            articles={kbPending}
+            isReviewer={isReviewer}
+            onApprove={(id) => reviewArticle(id, currentUser, 'approve')}
+            onReject={(id) => reviewArticle(id, currentUser, 'reject')}
+          />
 
           <div className="mb-4 flex flex-wrap items-center justify-between gap-2.5">
             <h2 className="m-0 text-[22px] font-extrabold tracking-[-0.01em]">บทความและเวิร์กช็อป</h2>

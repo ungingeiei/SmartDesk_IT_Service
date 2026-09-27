@@ -22,8 +22,13 @@ Run the files in order:
    nobody can actually sign in with these rows until the app
    generates real password hashes for them.
 
+4. **`04_kb_approval.sql`** — adds KB article approval (`status`,
+   `created_by`, `reviewed_by`) to a database created before that
+   feature. Safe to re-run; not needed on a fresh `01_schema.sql`.
+
 ```bash
 psql "$DATABASE_URL" -f database/01_schema.sql
 psql "$DATABASE_URL" -f database/02_reference_data.sql
 psql "$DATABASE_URL" -f database/03_test_data.sql   # dev/QA only
+psql "$DATABASE_URL" -f database/04_kb_approval.sql # existing DBs only
 ```

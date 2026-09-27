@@ -42,6 +42,12 @@ model kb_articles {
   source_ticket_id                                Int?              @unique
   created_at                                      DateTime          @default(now()) @db.Timestamptz(6)
   updated_at                                      DateTime          @default(now()) @db.Timestamptz(6)
+  status                                          kb_status_enum    @default(pending)
+  created_by                                      Int?
+  reviewed_by                                     Int?
+  reviewed_at                                     DateTime?         @db.Timestamptz(6)
+  users_kb_articles_created_byTousers             users?            @relation("kb_articles_created_byTousers", fields: [created_by], references: [id], onUpdate: NoAction)
+  users_kb_articles_reviewed_byTousers            users?            @relation("kb_articles_reviewed_byTousers", fields: [reviewed_by], references: [id], onUpdate: NoAction)
   kb_article_tags                                 kb_article_tags[]
   categories                                      categories        @relation(fields: [category_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   tickets_kb_articles_source_ticket_idTotickets   tickets?          @relation("kb_articles_source_ticket_idTotickets", fields: [source_ticket_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -50,6 +56,8 @@ model kb_articles {
   kb_feedback                                     kb_feedback[]
   kb_steps                                        kb_steps[]
   tickets_tickets_ai_suggested_kb_idTokb_articles tickets[]         @relation("tickets_ai_suggested_kb_idTokb_articles")
+
+  @@index([status])
 }
 
 model kb_comments {
@@ -188,26 +196,28 @@ model urgency_levels {
 }
 
 model users {
-  id                                 Int                     @id @default(autoincrement())
-  employee_code                      String                  @unique @db.VarChar(20)
-  name                               String                  @db.VarChar(255)
-  username                           String                  @unique @db.VarChar(50)
-  email                              String                  @unique @db.VarChar(255)
-  pwd_hash                           String                  @db.VarChar(255)
-  role                               user_role_enum
-  title                              String?                 @db.VarChar(255)
-  failed_login_attempts              Int                     @default(0) @db.SmallInt
-  locked_until                       DateTime?               @db.Timestamptz(6)
-  last_login_at                      DateTime?               @db.Timestamptz(6)
-  created_at                         DateTime                @default(now()) @db.Timestamptz(6)
-  kb_comments                        kb_comments[]
-  kb_deflections                     kb_deflections[]
-  kb_feedback                        kb_feedback[]
-  password_reset_tokens              password_reset_tokens[]
-  ticket_internal_notes              ticket_internal_notes[]
-  ticket_messages                    ticket_messages[]
-  tickets_tickets_assignee_idTousers tickets[]               @relation("tickets_assignee_idTousers")
-  tickets_tickets_reporter_idTousers tickets[]               @relation("tickets_reporter_idTousers")
+  id                                         Int                     @id @default(autoincrement())
+  employee_code                              String                  @unique @db.VarChar(20)
+  name                                       String                  @db.VarChar(255)
+  username                                   String                  @unique @db.VarChar(50)
+  email                                      String                  @unique @db.VarChar(255)
+  pwd_hash                                   String                  @db.VarChar(255)
+  role                                       user_role_enum
+  title                                      String?                 @db.VarChar(255)
+  failed_login_attempts                      Int                     @default(0) @db.SmallInt
+  locked_until                               DateTime?               @db.Timestamptz(6)
+  last_login_at                              DateTime?               @db.Timestamptz(6)
+  created_at                                 DateTime                @default(now()) @db.Timestamptz(6)
+  kb_articles_kb_articles_created_byTousers  kb_articles[]           @relation("kb_articles_created_byTousers")
+  kb_articles_kb_articles_reviewed_byTousers kb_articles[]           @relation("kb_articles_reviewed_byTousers")
+  kb_comments                                kb_comments[]
+  kb_deflections                             kb_deflections[]
+  kb_feedback                                kb_feedback[]
+  password_reset_tokens                      password_reset_tokens[]
+  ticket_internal_notes                      ticket_internal_notes[]
+  ticket_messages                            ticket_messages[]
+  tickets_tickets_assignee_idTousers         tickets[]               @relation("tickets_assignee_idTousers")
+  tickets_tickets_reporter_idTousers         tickets[]               @relation("tickets_reporter_idTousers")
 }
 
 enum ticket_priority_enum {
@@ -223,6 +233,12 @@ enum ticket_status_enum {
   pending
   resolved
   closed
+}
+
+enum kb_status_enum {
+  pending
+  approved
+  rejected
 }
 
 enum user_role_enum {

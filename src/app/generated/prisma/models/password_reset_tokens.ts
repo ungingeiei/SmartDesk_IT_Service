@@ -9,8 +9,8 @@
  * 🟢 You can import this file directly.
  */
 import type * as runtime from "@prisma/client/runtime/library"
-import type * as $Enums from "../enums.ts"
-import type * as Prisma from "../internal/prismaNamespace.ts"
+import type * as $Enums from "../enums"
+import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model password_reset_tokens
@@ -384,10 +384,6 @@ export type Password_reset_tokensListRelationFilter = {
 
 export type password_reset_tokensOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
-}
-
-export type NullableDateTimeFieldUpdateOperationsInput = {
-  set?: Date | string | null
 }
 
 export type password_reset_tokensCreateNestedManyWithoutUsersInput = {

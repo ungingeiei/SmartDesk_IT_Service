@@ -9,8 +9,8 @@
  * 🟢 You can import this file directly.
  */
 import type * as runtime from "@prisma/client/runtime/library"
-import type * as $Enums from "../enums.ts"
-import type * as Prisma from "../internal/prismaNamespace.ts"
+import type * as $Enums from "../enums"
+import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model users
@@ -276,6 +276,8 @@ export type usersWhereInput = {
   locked_until?: Prisma.DateTimeNullableFilter<"users"> | Date | string | null
   last_login_at?: Prisma.DateTimeNullableFilter<"users"> | Date | string | null
   created_at?: Prisma.DateTimeFilter<"users"> | Date | string
+  kb_articles_kb_articles_created_byTousers?: Prisma.Kb_articlesListRelationFilter
+  kb_articles_kb_articles_reviewed_byTousers?: Prisma.Kb_articlesListRelationFilter
   kb_comments?: Prisma.Kb_commentsListRelationFilter
   kb_deflections?: Prisma.Kb_deflectionsListRelationFilter
   kb_feedback?: Prisma.Kb_feedbackListRelationFilter
@@ -299,6 +301,8 @@ export type usersOrderByWithRelationInput = {
   locked_until?: Prisma.SortOrderInput | Prisma.SortOrder
   last_login_at?: Prisma.SortOrderInput | Prisma.SortOrder
   created_at?: Prisma.SortOrder
+  kb_articles_kb_articles_created_byTousers?: Prisma.kb_articlesOrderByRelationAggregateInput
+  kb_articles_kb_articles_reviewed_byTousers?: Prisma.kb_articlesOrderByRelationAggregateInput
   kb_comments?: Prisma.kb_commentsOrderByRelationAggregateInput
   kb_deflections?: Prisma.kb_deflectionsOrderByRelationAggregateInput
   kb_feedback?: Prisma.kb_feedbackOrderByRelationAggregateInput
@@ -325,6 +329,8 @@ export type usersWhereUniqueInput = Prisma.AtLeast<{
   locked_until?: Prisma.DateTimeNullableFilter<"users"> | Date | string | null
   last_login_at?: Prisma.DateTimeNullableFilter<"users"> | Date | string | null
   created_at?: Prisma.DateTimeFilter<"users"> | Date | string
+  kb_articles_kb_articles_created_byTousers?: Prisma.Kb_articlesListRelationFilter
+  kb_articles_kb_articles_reviewed_byTousers?: Prisma.Kb_articlesListRelationFilter
   kb_comments?: Prisma.Kb_commentsListRelationFilter
   kb_deflections?: Prisma.Kb_deflectionsListRelationFilter
   kb_feedback?: Prisma.Kb_feedbackListRelationFilter
@@ -385,6 +391,8 @@ export type usersCreateInput = {
   locked_until?: Date | string | null
   last_login_at?: Date | string | null
   created_at?: Date | string
+  kb_articles_kb_articles_created_byTousers?: Prisma.kb_articlesCreateNestedManyWithoutUsers_kb_articles_created_byTousersInput
+  kb_articles_kb_articles_reviewed_byTousers?: Prisma.kb_articlesCreateNestedManyWithoutUsers_kb_articles_reviewed_byTousersInput
   kb_comments?: Prisma.kb_commentsCreateNestedManyWithoutUsersInput
   kb_deflections?: Prisma.kb_deflectionsCreateNestedManyWithoutUsersInput
   kb_feedback?: Prisma.kb_feedbackCreateNestedManyWithoutUsersInput
@@ -408,6 +416,8 @@ export type usersUncheckedCreateInput = {
   locked_until?: Date | string | null
   last_login_at?: Date | string | null
   created_at?: Date | string
+  kb_articles_kb_articles_created_byTousers?: Prisma.kb_articlesUncheckedCreateNestedManyWithoutUsers_kb_articles_created_byTousersInput
+  kb_articles_kb_articles_reviewed_byTousers?: Prisma.kb_articlesUncheckedCreateNestedManyWithoutUsers_kb_articles_reviewed_byTousersInput
   kb_comments?: Prisma.kb_commentsUncheckedCreateNestedManyWithoutUsersInput
   kb_deflections?: Prisma.kb_deflectionsUncheckedCreateNestedManyWithoutUsersInput
   kb_feedback?: Prisma.kb_feedbackUncheckedCreateNestedManyWithoutUsersInput
@@ -430,6 +440,8 @@ export type usersUpdateInput = {
   locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kb_articles_kb_articles_created_byTousers?: Prisma.kb_articlesUpdateManyWithoutUsers_kb_articles_created_byTousersNestedInput
+  kb_articles_kb_articles_reviewed_byTousers?: Prisma.kb_articlesUpdateManyWithoutUsers_kb_articles_reviewed_byTousersNestedInput
   kb_comments?: Prisma.kb_commentsUpdateManyWithoutUsersNestedInput
   kb_deflections?: Prisma.kb_deflectionsUpdateManyWithoutUsersNestedInput
   kb_feedback?: Prisma.kb_feedbackUpdateManyWithoutUsersNestedInput
@@ -453,6 +465,8 @@ export type usersUncheckedUpdateInput = {
   locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kb_articles_kb_articles_created_byTousers?: Prisma.kb_articlesUncheckedUpdateManyWithoutUsers_kb_articles_created_byTousersNestedInput
+  kb_articles_kb_articles_reviewed_byTousers?: Prisma.kb_articlesUncheckedUpdateManyWithoutUsers_kb_articles_reviewed_byTousersNestedInput
   kb_comments?: Prisma.kb_commentsUncheckedUpdateManyWithoutUsersNestedInput
   kb_deflections?: Prisma.kb_deflectionsUncheckedUpdateManyWithoutUsersNestedInput
   kb_feedback?: Prisma.kb_feedbackUncheckedUpdateManyWithoutUsersNestedInput
@@ -570,6 +584,38 @@ export type usersMinOrderByAggregateInput = {
 export type usersSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   failed_login_attempts?: Prisma.SortOrder
+}
+
+export type usersCreateNestedOneWithoutKb_articles_kb_articles_created_byTousersInput = {
+  create?: Prisma.XOR<Prisma.usersCreateWithoutKb_articles_kb_articles_created_byTousersInput, Prisma.usersUncheckedCreateWithoutKb_articles_kb_articles_created_byTousersInput>
+  connectOrCreate?: Prisma.usersCreateOrConnectWithoutKb_articles_kb_articles_created_byTousersInput
+  connect?: Prisma.usersWhereUniqueInput
+}
+
+export type usersCreateNestedOneWithoutKb_articles_kb_articles_reviewed_byTousersInput = {
+  create?: Prisma.XOR<Prisma.usersCreateWithoutKb_articles_kb_articles_reviewed_byTousersInput, Prisma.usersUncheckedCreateWithoutKb_articles_kb_articles_reviewed_byTousersInput>
+  connectOrCreate?: Prisma.usersCreateOrConnectWithoutKb_articles_kb_articles_reviewed_byTousersInput
+  connect?: Prisma.usersWhereUniqueInput
+}
+
+export type usersUpdateOneWithoutKb_articles_kb_articles_created_byTousersNestedInput = {
+  create?: Prisma.XOR<Prisma.usersCreateWithoutKb_articles_kb_articles_created_byTousersInput, Prisma.usersUncheckedCreateWithoutKb_articles_kb_articles_created_byTousersInput>
+  connectOrCreate?: Prisma.usersCreateOrConnectWithoutKb_articles_kb_articles_created_byTousersInput
+  upsert?: Prisma.usersUpsertWithoutKb_articles_kb_articles_created_byTousersInput
+  disconnect?: Prisma.usersWhereInput | boolean
+  delete?: Prisma.usersWhereInput | boolean
+  connect?: Prisma.usersWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.usersUpdateToOneWithWhereWithoutKb_articles_kb_articles_created_byTousersInput, Prisma.usersUpdateWithoutKb_articles_kb_articles_created_byTousersInput>, Prisma.usersUncheckedUpdateWithoutKb_articles_kb_articles_created_byTousersInput>
+}
+
+export type usersUpdateOneWithoutKb_articles_kb_articles_reviewed_byTousersNestedInput = {
+  create?: Prisma.XOR<Prisma.usersCreateWithoutKb_articles_kb_articles_reviewed_byTousersInput, Prisma.usersUncheckedCreateWithoutKb_articles_kb_articles_reviewed_byTousersInput>
+  connectOrCreate?: Prisma.usersCreateOrConnectWithoutKb_articles_kb_articles_reviewed_byTousersInput
+  upsert?: Prisma.usersUpsertWithoutKb_articles_kb_articles_reviewed_byTousersInput
+  disconnect?: Prisma.usersWhereInput | boolean
+  delete?: Prisma.usersWhereInput | boolean
+  connect?: Prisma.usersWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.usersUpdateToOneWithWhereWithoutKb_articles_kb_articles_reviewed_byTousersInput, Prisma.usersUpdateWithoutKb_articles_kb_articles_reviewed_byTousersInput>, Prisma.usersUncheckedUpdateWithoutKb_articles_kb_articles_reviewed_byTousersInput>
 }
 
 export type usersCreateNestedOneWithoutKb_commentsInput = {
@@ -694,6 +740,226 @@ export type Enumuser_role_enumFieldUpdateOperationsInput = {
   set?: $Enums.user_role_enum
 }
 
+export type usersCreateWithoutKb_articles_kb_articles_created_byTousersInput = {
+  employee_code: string
+  name: string
+  username: string
+  email: string
+  pwd_hash: string
+  role: $Enums.user_role_enum
+  title?: string | null
+  failed_login_attempts?: number
+  locked_until?: Date | string | null
+  last_login_at?: Date | string | null
+  created_at?: Date | string
+  kb_articles_kb_articles_reviewed_byTousers?: Prisma.kb_articlesCreateNestedManyWithoutUsers_kb_articles_reviewed_byTousersInput
+  kb_comments?: Prisma.kb_commentsCreateNestedManyWithoutUsersInput
+  kb_deflections?: Prisma.kb_deflectionsCreateNestedManyWithoutUsersInput
+  kb_feedback?: Prisma.kb_feedbackCreateNestedManyWithoutUsersInput
+  password_reset_tokens?: Prisma.password_reset_tokensCreateNestedManyWithoutUsersInput
+  ticket_internal_notes?: Prisma.ticket_internal_notesCreateNestedManyWithoutUsersInput
+  ticket_messages?: Prisma.ticket_messagesCreateNestedManyWithoutUsersInput
+  tickets_tickets_assignee_idTousers?: Prisma.ticketsCreateNestedManyWithoutUsers_tickets_assignee_idTousersInput
+  tickets_tickets_reporter_idTousers?: Prisma.ticketsCreateNestedManyWithoutUsers_tickets_reporter_idTousersInput
+}
+
+export type usersUncheckedCreateWithoutKb_articles_kb_articles_created_byTousersInput = {
+  id?: number
+  employee_code: string
+  name: string
+  username: string
+  email: string
+  pwd_hash: string
+  role: $Enums.user_role_enum
+  title?: string | null
+  failed_login_attempts?: number
+  locked_until?: Date | string | null
+  last_login_at?: Date | string | null
+  created_at?: Date | string
+  kb_articles_kb_articles_reviewed_byTousers?: Prisma.kb_articlesUncheckedCreateNestedManyWithoutUsers_kb_articles_reviewed_byTousersInput
+  kb_comments?: Prisma.kb_commentsUncheckedCreateNestedManyWithoutUsersInput
+  kb_deflections?: Prisma.kb_deflectionsUncheckedCreateNestedManyWithoutUsersInput
+  kb_feedback?: Prisma.kb_feedbackUncheckedCreateNestedManyWithoutUsersInput
+  password_reset_tokens?: Prisma.password_reset_tokensUncheckedCreateNestedManyWithoutUsersInput
+  ticket_internal_notes?: Prisma.ticket_internal_notesUncheckedCreateNestedManyWithoutUsersInput
+  ticket_messages?: Prisma.ticket_messagesUncheckedCreateNestedManyWithoutUsersInput
+  tickets_tickets_assignee_idTousers?: Prisma.ticketsUncheckedCreateNestedManyWithoutUsers_tickets_assignee_idTousersInput
+  tickets_tickets_reporter_idTousers?: Prisma.ticketsUncheckedCreateNestedManyWithoutUsers_tickets_reporter_idTousersInput
+}
+
+export type usersCreateOrConnectWithoutKb_articles_kb_articles_created_byTousersInput = {
+  where: Prisma.usersWhereUniqueInput
+  create: Prisma.XOR<Prisma.usersCreateWithoutKb_articles_kb_articles_created_byTousersInput, Prisma.usersUncheckedCreateWithoutKb_articles_kb_articles_created_byTousersInput>
+}
+
+export type usersCreateWithoutKb_articles_kb_articles_reviewed_byTousersInput = {
+  employee_code: string
+  name: string
+  username: string
+  email: string
+  pwd_hash: string
+  role: $Enums.user_role_enum
+  title?: string | null
+  failed_login_attempts?: number
+  locked_until?: Date | string | null
+  last_login_at?: Date | string | null
+  created_at?: Date | string
+  kb_articles_kb_articles_created_byTousers?: Prisma.kb_articlesCreateNestedManyWithoutUsers_kb_articles_created_byTousersInput
+  kb_comments?: Prisma.kb_commentsCreateNestedManyWithoutUsersInput
+  kb_deflections?: Prisma.kb_deflectionsCreateNestedManyWithoutUsersInput
+  kb_feedback?: Prisma.kb_feedbackCreateNestedManyWithoutUsersInput
+  password_reset_tokens?: Prisma.password_reset_tokensCreateNestedManyWithoutUsersInput
+  ticket_internal_notes?: Prisma.ticket_internal_notesCreateNestedManyWithoutUsersInput
+  ticket_messages?: Prisma.ticket_messagesCreateNestedManyWithoutUsersInput
+  tickets_tickets_assignee_idTousers?: Prisma.ticketsCreateNestedManyWithoutUsers_tickets_assignee_idTousersInput
+  tickets_tickets_reporter_idTousers?: Prisma.ticketsCreateNestedManyWithoutUsers_tickets_reporter_idTousersInput
+}
+
+export type usersUncheckedCreateWithoutKb_articles_kb_articles_reviewed_byTousersInput = {
+  id?: number
+  employee_code: string
+  name: string
+  username: string
+  email: string
+  pwd_hash: string
+  role: $Enums.user_role_enum
+  title?: string | null
+  failed_login_attempts?: number
+  locked_until?: Date | string | null
+  last_login_at?: Date | string | null
+  created_at?: Date | string
+  kb_articles_kb_articles_created_byTousers?: Prisma.kb_articlesUncheckedCreateNestedManyWithoutUsers_kb_articles_created_byTousersInput
+  kb_comments?: Prisma.kb_commentsUncheckedCreateNestedManyWithoutUsersInput
+  kb_deflections?: Prisma.kb_deflectionsUncheckedCreateNestedManyWithoutUsersInput
+  kb_feedback?: Prisma.kb_feedbackUncheckedCreateNestedManyWithoutUsersInput
+  password_reset_tokens?: Prisma.password_reset_tokensUncheckedCreateNestedManyWithoutUsersInput
+  ticket_internal_notes?: Prisma.ticket_internal_notesUncheckedCreateNestedManyWithoutUsersInput
+  ticket_messages?: Prisma.ticket_messagesUncheckedCreateNestedManyWithoutUsersInput
+  tickets_tickets_assignee_idTousers?: Prisma.ticketsUncheckedCreateNestedManyWithoutUsers_tickets_assignee_idTousersInput
+  tickets_tickets_reporter_idTousers?: Prisma.ticketsUncheckedCreateNestedManyWithoutUsers_tickets_reporter_idTousersInput
+}
+
+export type usersCreateOrConnectWithoutKb_articles_kb_articles_reviewed_byTousersInput = {
+  where: Prisma.usersWhereUniqueInput
+  create: Prisma.XOR<Prisma.usersCreateWithoutKb_articles_kb_articles_reviewed_byTousersInput, Prisma.usersUncheckedCreateWithoutKb_articles_kb_articles_reviewed_byTousersInput>
+}
+
+export type usersUpsertWithoutKb_articles_kb_articles_created_byTousersInput = {
+  update: Prisma.XOR<Prisma.usersUpdateWithoutKb_articles_kb_articles_created_byTousersInput, Prisma.usersUncheckedUpdateWithoutKb_articles_kb_articles_created_byTousersInput>
+  create: Prisma.XOR<Prisma.usersCreateWithoutKb_articles_kb_articles_created_byTousersInput, Prisma.usersUncheckedCreateWithoutKb_articles_kb_articles_created_byTousersInput>
+  where?: Prisma.usersWhereInput
+}
+
+export type usersUpdateToOneWithWhereWithoutKb_articles_kb_articles_created_byTousersInput = {
+  where?: Prisma.usersWhereInput
+  data: Prisma.XOR<Prisma.usersUpdateWithoutKb_articles_kb_articles_created_byTousersInput, Prisma.usersUncheckedUpdateWithoutKb_articles_kb_articles_created_byTousersInput>
+}
+
+export type usersUpdateWithoutKb_articles_kb_articles_created_byTousersInput = {
+  employee_code?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  pwd_hash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.Enumuser_role_enumFieldUpdateOperationsInput | $Enums.user_role_enum
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  failed_login_attempts?: Prisma.IntFieldUpdateOperationsInput | number
+  locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kb_articles_kb_articles_reviewed_byTousers?: Prisma.kb_articlesUpdateManyWithoutUsers_kb_articles_reviewed_byTousersNestedInput
+  kb_comments?: Prisma.kb_commentsUpdateManyWithoutUsersNestedInput
+  kb_deflections?: Prisma.kb_deflectionsUpdateManyWithoutUsersNestedInput
+  kb_feedback?: Prisma.kb_feedbackUpdateManyWithoutUsersNestedInput
+  password_reset_tokens?: Prisma.password_reset_tokensUpdateManyWithoutUsersNestedInput
+  ticket_internal_notes?: Prisma.ticket_internal_notesUpdateManyWithoutUsersNestedInput
+  ticket_messages?: Prisma.ticket_messagesUpdateManyWithoutUsersNestedInput
+  tickets_tickets_assignee_idTousers?: Prisma.ticketsUpdateManyWithoutUsers_tickets_assignee_idTousersNestedInput
+  tickets_tickets_reporter_idTousers?: Prisma.ticketsUpdateManyWithoutUsers_tickets_reporter_idTousersNestedInput
+}
+
+export type usersUncheckedUpdateWithoutKb_articles_kb_articles_created_byTousersInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  employee_code?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  pwd_hash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.Enumuser_role_enumFieldUpdateOperationsInput | $Enums.user_role_enum
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  failed_login_attempts?: Prisma.IntFieldUpdateOperationsInput | number
+  locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kb_articles_kb_articles_reviewed_byTousers?: Prisma.kb_articlesUncheckedUpdateManyWithoutUsers_kb_articles_reviewed_byTousersNestedInput
+  kb_comments?: Prisma.kb_commentsUncheckedUpdateManyWithoutUsersNestedInput
+  kb_deflections?: Prisma.kb_deflectionsUncheckedUpdateManyWithoutUsersNestedInput
+  kb_feedback?: Prisma.kb_feedbackUncheckedUpdateManyWithoutUsersNestedInput
+  password_reset_tokens?: Prisma.password_reset_tokensUncheckedUpdateManyWithoutUsersNestedInput
+  ticket_internal_notes?: Prisma.ticket_internal_notesUncheckedUpdateManyWithoutUsersNestedInput
+  ticket_messages?: Prisma.ticket_messagesUncheckedUpdateManyWithoutUsersNestedInput
+  tickets_tickets_assignee_idTousers?: Prisma.ticketsUncheckedUpdateManyWithoutUsers_tickets_assignee_idTousersNestedInput
+  tickets_tickets_reporter_idTousers?: Prisma.ticketsUncheckedUpdateManyWithoutUsers_tickets_reporter_idTousersNestedInput
+}
+
+export type usersUpsertWithoutKb_articles_kb_articles_reviewed_byTousersInput = {
+  update: Prisma.XOR<Prisma.usersUpdateWithoutKb_articles_kb_articles_reviewed_byTousersInput, Prisma.usersUncheckedUpdateWithoutKb_articles_kb_articles_reviewed_byTousersInput>
+  create: Prisma.XOR<Prisma.usersCreateWithoutKb_articles_kb_articles_reviewed_byTousersInput, Prisma.usersUncheckedCreateWithoutKb_articles_kb_articles_reviewed_byTousersInput>
+  where?: Prisma.usersWhereInput
+}
+
+export type usersUpdateToOneWithWhereWithoutKb_articles_kb_articles_reviewed_byTousersInput = {
+  where?: Prisma.usersWhereInput
+  data: Prisma.XOR<Prisma.usersUpdateWithoutKb_articles_kb_articles_reviewed_byTousersInput, Prisma.usersUncheckedUpdateWithoutKb_articles_kb_articles_reviewed_byTousersInput>
+}
+
+export type usersUpdateWithoutKb_articles_kb_articles_reviewed_byTousersInput = {
+  employee_code?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  pwd_hash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.Enumuser_role_enumFieldUpdateOperationsInput | $Enums.user_role_enum
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  failed_login_attempts?: Prisma.IntFieldUpdateOperationsInput | number
+  locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kb_articles_kb_articles_created_byTousers?: Prisma.kb_articlesUpdateManyWithoutUsers_kb_articles_created_byTousersNestedInput
+  kb_comments?: Prisma.kb_commentsUpdateManyWithoutUsersNestedInput
+  kb_deflections?: Prisma.kb_deflectionsUpdateManyWithoutUsersNestedInput
+  kb_feedback?: Prisma.kb_feedbackUpdateManyWithoutUsersNestedInput
+  password_reset_tokens?: Prisma.password_reset_tokensUpdateManyWithoutUsersNestedInput
+  ticket_internal_notes?: Prisma.ticket_internal_notesUpdateManyWithoutUsersNestedInput
+  ticket_messages?: Prisma.ticket_messagesUpdateManyWithoutUsersNestedInput
+  tickets_tickets_assignee_idTousers?: Prisma.ticketsUpdateManyWithoutUsers_tickets_assignee_idTousersNestedInput
+  tickets_tickets_reporter_idTousers?: Prisma.ticketsUpdateManyWithoutUsers_tickets_reporter_idTousersNestedInput
+}
+
+export type usersUncheckedUpdateWithoutKb_articles_kb_articles_reviewed_byTousersInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  employee_code?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  pwd_hash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.Enumuser_role_enumFieldUpdateOperationsInput | $Enums.user_role_enum
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  failed_login_attempts?: Prisma.IntFieldUpdateOperationsInput | number
+  locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kb_articles_kb_articles_created_byTousers?: Prisma.kb_articlesUncheckedUpdateManyWithoutUsers_kb_articles_created_byTousersNestedInput
+  kb_comments?: Prisma.kb_commentsUncheckedUpdateManyWithoutUsersNestedInput
+  kb_deflections?: Prisma.kb_deflectionsUncheckedUpdateManyWithoutUsersNestedInput
+  kb_feedback?: Prisma.kb_feedbackUncheckedUpdateManyWithoutUsersNestedInput
+  password_reset_tokens?: Prisma.password_reset_tokensUncheckedUpdateManyWithoutUsersNestedInput
+  ticket_internal_notes?: Prisma.ticket_internal_notesUncheckedUpdateManyWithoutUsersNestedInput
+  ticket_messages?: Prisma.ticket_messagesUncheckedUpdateManyWithoutUsersNestedInput
+  tickets_tickets_assignee_idTousers?: Prisma.ticketsUncheckedUpdateManyWithoutUsers_tickets_assignee_idTousersNestedInput
+  tickets_tickets_reporter_idTousers?: Prisma.ticketsUncheckedUpdateManyWithoutUsers_tickets_reporter_idTousersNestedInput
+}
+
 export type usersCreateWithoutKb_commentsInput = {
   employee_code: string
   name: string
@@ -706,6 +972,8 @@ export type usersCreateWithoutKb_commentsInput = {
   locked_until?: Date | string | null
   last_login_at?: Date | string | null
   created_at?: Date | string
+  kb_articles_kb_articles_created_byTousers?: Prisma.kb_articlesCreateNestedManyWithoutUsers_kb_articles_created_byTousersInput
+  kb_articles_kb_articles_reviewed_byTousers?: Prisma.kb_articlesCreateNestedManyWithoutUsers_kb_articles_reviewed_byTousersInput
   kb_deflections?: Prisma.kb_deflectionsCreateNestedManyWithoutUsersInput
   kb_feedback?: Prisma.kb_feedbackCreateNestedManyWithoutUsersInput
   password_reset_tokens?: Prisma.password_reset_tokensCreateNestedManyWithoutUsersInput
@@ -728,6 +996,8 @@ export type usersUncheckedCreateWithoutKb_commentsInput = {
   locked_until?: Date | string | null
   last_login_at?: Date | string | null
   created_at?: Date | string
+  kb_articles_kb_articles_created_byTousers?: Prisma.kb_articlesUncheckedCreateNestedManyWithoutUsers_kb_articles_created_byTousersInput
+  kb_articles_kb_articles_reviewed_byTousers?: Prisma.kb_articlesUncheckedCreateNestedManyWithoutUsers_kb_articles_reviewed_byTousersInput
   kb_deflections?: Prisma.kb_deflectionsUncheckedCreateNestedManyWithoutUsersInput
   kb_feedback?: Prisma.kb_feedbackUncheckedCreateNestedManyWithoutUsersInput
   password_reset_tokens?: Prisma.password_reset_tokensUncheckedCreateNestedManyWithoutUsersInput
@@ -765,6 +1035,8 @@ export type usersUpdateWithoutKb_commentsInput = {
   locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kb_articles_kb_articles_created_byTousers?: Prisma.kb_articlesUpdateManyWithoutUsers_kb_articles_created_byTousersNestedInput
+  kb_articles_kb_articles_reviewed_byTousers?: Prisma.kb_articlesUpdateManyWithoutUsers_kb_articles_reviewed_byTousersNestedInput
   kb_deflections?: Prisma.kb_deflectionsUpdateManyWithoutUsersNestedInput
   kb_feedback?: Prisma.kb_feedbackUpdateManyWithoutUsersNestedInput
   password_reset_tokens?: Prisma.password_reset_tokensUpdateManyWithoutUsersNestedInput
@@ -787,6 +1059,8 @@ export type usersUncheckedUpdateWithoutKb_commentsInput = {
   locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kb_articles_kb_articles_created_byTousers?: Prisma.kb_articlesUncheckedUpdateManyWithoutUsers_kb_articles_created_byTousersNestedInput
+  kb_articles_kb_articles_reviewed_byTousers?: Prisma.kb_articlesUncheckedUpdateManyWithoutUsers_kb_articles_reviewed_byTousersNestedInput
   kb_deflections?: Prisma.kb_deflectionsUncheckedUpdateManyWithoutUsersNestedInput
   kb_feedback?: Prisma.kb_feedbackUncheckedUpdateManyWithoutUsersNestedInput
   password_reset_tokens?: Prisma.password_reset_tokensUncheckedUpdateManyWithoutUsersNestedInput
@@ -808,6 +1082,8 @@ export type usersCreateWithoutKb_deflectionsInput = {
   locked_until?: Date | string | null
   last_login_at?: Date | string | null
   created_at?: Date | string
+  kb_articles_kb_articles_created_byTousers?: Prisma.kb_articlesCreateNestedManyWithoutUsers_kb_articles_created_byTousersInput
+  kb_articles_kb_articles_reviewed_byTousers?: Prisma.kb_articlesCreateNestedManyWithoutUsers_kb_articles_reviewed_byTousersInput
   kb_comments?: Prisma.kb_commentsCreateNestedManyWithoutUsersInput
   kb_feedback?: Prisma.kb_feedbackCreateNestedManyWithoutUsersInput
   password_reset_tokens?: Prisma.password_reset_tokensCreateNestedManyWithoutUsersInput
@@ -830,6 +1106,8 @@ export type usersUncheckedCreateWithoutKb_deflectionsInput = {
   locked_until?: Date | string | null
   last_login_at?: Date | string | null
   created_at?: Date | string
+  kb_articles_kb_articles_created_byTousers?: Prisma.kb_articlesUncheckedCreateNestedManyWithoutUsers_kb_articles_created_byTousersInput
+  kb_articles_kb_articles_reviewed_byTousers?: Prisma.kb_articlesUncheckedCreateNestedManyWithoutUsers_kb_articles_reviewed_byTousersInput
   kb_comments?: Prisma.kb_commentsUncheckedCreateNestedManyWithoutUsersInput
   kb_feedback?: Prisma.kb_feedbackUncheckedCreateNestedManyWithoutUsersInput
   password_reset_tokens?: Prisma.password_reset_tokensUncheckedCreateNestedManyWithoutUsersInput
@@ -867,6 +1145,8 @@ export type usersUpdateWithoutKb_deflectionsInput = {
   locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kb_articles_kb_articles_created_byTousers?: Prisma.kb_articlesUpdateManyWithoutUsers_kb_articles_created_byTousersNestedInput
+  kb_articles_kb_articles_reviewed_byTousers?: Prisma.kb_articlesUpdateManyWithoutUsers_kb_articles_reviewed_byTousersNestedInput
   kb_comments?: Prisma.kb_commentsUpdateManyWithoutUsersNestedInput
   kb_feedback?: Prisma.kb_feedbackUpdateManyWithoutUsersNestedInput
   password_reset_tokens?: Prisma.password_reset_tokensUpdateManyWithoutUsersNestedInput
@@ -889,6 +1169,8 @@ export type usersUncheckedUpdateWithoutKb_deflectionsInput = {
   locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kb_articles_kb_articles_created_byTousers?: Prisma.kb_articlesUncheckedUpdateManyWithoutUsers_kb_articles_created_byTousersNestedInput
+  kb_articles_kb_articles_reviewed_byTousers?: Prisma.kb_articlesUncheckedUpdateManyWithoutUsers_kb_articles_reviewed_byTousersNestedInput
   kb_comments?: Prisma.kb_commentsUncheckedUpdateManyWithoutUsersNestedInput
   kb_feedback?: Prisma.kb_feedbackUncheckedUpdateManyWithoutUsersNestedInput
   password_reset_tokens?: Prisma.password_reset_tokensUncheckedUpdateManyWithoutUsersNestedInput
@@ -910,6 +1192,8 @@ export type usersCreateWithoutKb_feedbackInput = {
   locked_until?: Date | string | null
   last_login_at?: Date | string | null
   created_at?: Date | string
+  kb_articles_kb_articles_created_byTousers?: Prisma.kb_articlesCreateNestedManyWithoutUsers_kb_articles_created_byTousersInput
+  kb_articles_kb_articles_reviewed_byTousers?: Prisma.kb_articlesCreateNestedManyWithoutUsers_kb_articles_reviewed_byTousersInput
   kb_comments?: Prisma.kb_commentsCreateNestedManyWithoutUsersInput
   kb_deflections?: Prisma.kb_deflectionsCreateNestedManyWithoutUsersInput
   password_reset_tokens?: Prisma.password_reset_tokensCreateNestedManyWithoutUsersInput
@@ -932,6 +1216,8 @@ export type usersUncheckedCreateWithoutKb_feedbackInput = {
   locked_until?: Date | string | null
   last_login_at?: Date | string | null
   created_at?: Date | string
+  kb_articles_kb_articles_created_byTousers?: Prisma.kb_articlesUncheckedCreateNestedManyWithoutUsers_kb_articles_created_byTousersInput
+  kb_articles_kb_articles_reviewed_byTousers?: Prisma.kb_articlesUncheckedCreateNestedManyWithoutUsers_kb_articles_reviewed_byTousersInput
   kb_comments?: Prisma.kb_commentsUncheckedCreateNestedManyWithoutUsersInput
   kb_deflections?: Prisma.kb_deflectionsUncheckedCreateNestedManyWithoutUsersInput
   password_reset_tokens?: Prisma.password_reset_tokensUncheckedCreateNestedManyWithoutUsersInput
@@ -969,6 +1255,8 @@ export type usersUpdateWithoutKb_feedbackInput = {
   locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kb_articles_kb_articles_created_byTousers?: Prisma.kb_articlesUpdateManyWithoutUsers_kb_articles_created_byTousersNestedInput
+  kb_articles_kb_articles_reviewed_byTousers?: Prisma.kb_articlesUpdateManyWithoutUsers_kb_articles_reviewed_byTousersNestedInput
   kb_comments?: Prisma.kb_commentsUpdateManyWithoutUsersNestedInput
   kb_deflections?: Prisma.kb_deflectionsUpdateManyWithoutUsersNestedInput
   password_reset_tokens?: Prisma.password_reset_tokensUpdateManyWithoutUsersNestedInput
@@ -991,6 +1279,8 @@ export type usersUncheckedUpdateWithoutKb_feedbackInput = {
   locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kb_articles_kb_articles_created_byTousers?: Prisma.kb_articlesUncheckedUpdateManyWithoutUsers_kb_articles_created_byTousersNestedInput
+  kb_articles_kb_articles_reviewed_byTousers?: Prisma.kb_articlesUncheckedUpdateManyWithoutUsers_kb_articles_reviewed_byTousersNestedInput
   kb_comments?: Prisma.kb_commentsUncheckedUpdateManyWithoutUsersNestedInput
   kb_deflections?: Prisma.kb_deflectionsUncheckedUpdateManyWithoutUsersNestedInput
   password_reset_tokens?: Prisma.password_reset_tokensUncheckedUpdateManyWithoutUsersNestedInput
@@ -1012,6 +1302,8 @@ export type usersCreateWithoutPassword_reset_tokensInput = {
   locked_until?: Date | string | null
   last_login_at?: Date | string | null
   created_at?: Date | string
+  kb_articles_kb_articles_created_byTousers?: Prisma.kb_articlesCreateNestedManyWithoutUsers_kb_articles_created_byTousersInput
+  kb_articles_kb_articles_reviewed_byTousers?: Prisma.kb_articlesCreateNestedManyWithoutUsers_kb_articles_reviewed_byTousersInput
   kb_comments?: Prisma.kb_commentsCreateNestedManyWithoutUsersInput
   kb_deflections?: Prisma.kb_deflectionsCreateNestedManyWithoutUsersInput
   kb_feedback?: Prisma.kb_feedbackCreateNestedManyWithoutUsersInput
@@ -1034,6 +1326,8 @@ export type usersUncheckedCreateWithoutPassword_reset_tokensInput = {
   locked_until?: Date | string | null
   last_login_at?: Date | string | null
   created_at?: Date | string
+  kb_articles_kb_articles_created_byTousers?: Prisma.kb_articlesUncheckedCreateNestedManyWithoutUsers_kb_articles_created_byTousersInput
+  kb_articles_kb_articles_reviewed_byTousers?: Prisma.kb_articlesUncheckedCreateNestedManyWithoutUsers_kb_articles_reviewed_byTousersInput
   kb_comments?: Prisma.kb_commentsUncheckedCreateNestedManyWithoutUsersInput
   kb_deflections?: Prisma.kb_deflectionsUncheckedCreateNestedManyWithoutUsersInput
   kb_feedback?: Prisma.kb_feedbackUncheckedCreateNestedManyWithoutUsersInput
@@ -1071,6 +1365,8 @@ export type usersUpdateWithoutPassword_reset_tokensInput = {
   locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kb_articles_kb_articles_created_byTousers?: Prisma.kb_articlesUpdateManyWithoutUsers_kb_articles_created_byTousersNestedInput
+  kb_articles_kb_articles_reviewed_byTousers?: Prisma.kb_articlesUpdateManyWithoutUsers_kb_articles_reviewed_byTousersNestedInput
   kb_comments?: Prisma.kb_commentsUpdateManyWithoutUsersNestedInput
   kb_deflections?: Prisma.kb_deflectionsUpdateManyWithoutUsersNestedInput
   kb_feedback?: Prisma.kb_feedbackUpdateManyWithoutUsersNestedInput
@@ -1093,6 +1389,8 @@ export type usersUncheckedUpdateWithoutPassword_reset_tokensInput = {
   locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kb_articles_kb_articles_created_byTousers?: Prisma.kb_articlesUncheckedUpdateManyWithoutUsers_kb_articles_created_byTousersNestedInput
+  kb_articles_kb_articles_reviewed_byTousers?: Prisma.kb_articlesUncheckedUpdateManyWithoutUsers_kb_articles_reviewed_byTousersNestedInput
   kb_comments?: Prisma.kb_commentsUncheckedUpdateManyWithoutUsersNestedInput
   kb_deflections?: Prisma.kb_deflectionsUncheckedUpdateManyWithoutUsersNestedInput
   kb_feedback?: Prisma.kb_feedbackUncheckedUpdateManyWithoutUsersNestedInput
@@ -1114,6 +1412,8 @@ export type usersCreateWithoutTicket_internal_notesInput = {
   locked_until?: Date | string | null
   last_login_at?: Date | string | null
   created_at?: Date | string
+  kb_articles_kb_articles_created_byTousers?: Prisma.kb_articlesCreateNestedManyWithoutUsers_kb_articles_created_byTousersInput
+  kb_articles_kb_articles_reviewed_byTousers?: Prisma.kb_articlesCreateNestedManyWithoutUsers_kb_articles_reviewed_byTousersInput
   kb_comments?: Prisma.kb_commentsCreateNestedManyWithoutUsersInput
   kb_deflections?: Prisma.kb_deflectionsCreateNestedManyWithoutUsersInput
   kb_feedback?: Prisma.kb_feedbackCreateNestedManyWithoutUsersInput
@@ -1136,6 +1436,8 @@ export type usersUncheckedCreateWithoutTicket_internal_notesInput = {
   locked_until?: Date | string | null
   last_login_at?: Date | string | null
   created_at?: Date | string
+  kb_articles_kb_articles_created_byTousers?: Prisma.kb_articlesUncheckedCreateNestedManyWithoutUsers_kb_articles_created_byTousersInput
+  kb_articles_kb_articles_reviewed_byTousers?: Prisma.kb_articlesUncheckedCreateNestedManyWithoutUsers_kb_articles_reviewed_byTousersInput
   kb_comments?: Prisma.kb_commentsUncheckedCreateNestedManyWithoutUsersInput
   kb_deflections?: Prisma.kb_deflectionsUncheckedCreateNestedManyWithoutUsersInput
   kb_feedback?: Prisma.kb_feedbackUncheckedCreateNestedManyWithoutUsersInput
@@ -1173,6 +1475,8 @@ export type usersUpdateWithoutTicket_internal_notesInput = {
   locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kb_articles_kb_articles_created_byTousers?: Prisma.kb_articlesUpdateManyWithoutUsers_kb_articles_created_byTousersNestedInput
+  kb_articles_kb_articles_reviewed_byTousers?: Prisma.kb_articlesUpdateManyWithoutUsers_kb_articles_reviewed_byTousersNestedInput
   kb_comments?: Prisma.kb_commentsUpdateManyWithoutUsersNestedInput
   kb_deflections?: Prisma.kb_deflectionsUpdateManyWithoutUsersNestedInput
   kb_feedback?: Prisma.kb_feedbackUpdateManyWithoutUsersNestedInput
@@ -1195,6 +1499,8 @@ export type usersUncheckedUpdateWithoutTicket_internal_notesInput = {
   locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kb_articles_kb_articles_created_byTousers?: Prisma.kb_articlesUncheckedUpdateManyWithoutUsers_kb_articles_created_byTousersNestedInput
+  kb_articles_kb_articles_reviewed_byTousers?: Prisma.kb_articlesUncheckedUpdateManyWithoutUsers_kb_articles_reviewed_byTousersNestedInput
   kb_comments?: Prisma.kb_commentsUncheckedUpdateManyWithoutUsersNestedInput
   kb_deflections?: Prisma.kb_deflectionsUncheckedUpdateManyWithoutUsersNestedInput
   kb_feedback?: Prisma.kb_feedbackUncheckedUpdateManyWithoutUsersNestedInput
@@ -1216,6 +1522,8 @@ export type usersCreateWithoutTicket_messagesInput = {
   locked_until?: Date | string | null
   last_login_at?: Date | string | null
   created_at?: Date | string
+  kb_articles_kb_articles_created_byTousers?: Prisma.kb_articlesCreateNestedManyWithoutUsers_kb_articles_created_byTousersInput
+  kb_articles_kb_articles_reviewed_byTousers?: Prisma.kb_articlesCreateNestedManyWithoutUsers_kb_articles_reviewed_byTousersInput
   kb_comments?: Prisma.kb_commentsCreateNestedManyWithoutUsersInput
   kb_deflections?: Prisma.kb_deflectionsCreateNestedManyWithoutUsersInput
   kb_feedback?: Prisma.kb_feedbackCreateNestedManyWithoutUsersInput
@@ -1238,6 +1546,8 @@ export type usersUncheckedCreateWithoutTicket_messagesInput = {
   locked_until?: Date | string | null
   last_login_at?: Date | string | null
   created_at?: Date | string
+  kb_articles_kb_articles_created_byTousers?: Prisma.kb_articlesUncheckedCreateNestedManyWithoutUsers_kb_articles_created_byTousersInput
+  kb_articles_kb_articles_reviewed_byTousers?: Prisma.kb_articlesUncheckedCreateNestedManyWithoutUsers_kb_articles_reviewed_byTousersInput
   kb_comments?: Prisma.kb_commentsUncheckedCreateNestedManyWithoutUsersInput
   kb_deflections?: Prisma.kb_deflectionsUncheckedCreateNestedManyWithoutUsersInput
   kb_feedback?: Prisma.kb_feedbackUncheckedCreateNestedManyWithoutUsersInput
@@ -1275,6 +1585,8 @@ export type usersUpdateWithoutTicket_messagesInput = {
   locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kb_articles_kb_articles_created_byTousers?: Prisma.kb_articlesUpdateManyWithoutUsers_kb_articles_created_byTousersNestedInput
+  kb_articles_kb_articles_reviewed_byTousers?: Prisma.kb_articlesUpdateManyWithoutUsers_kb_articles_reviewed_byTousersNestedInput
   kb_comments?: Prisma.kb_commentsUpdateManyWithoutUsersNestedInput
   kb_deflections?: Prisma.kb_deflectionsUpdateManyWithoutUsersNestedInput
   kb_feedback?: Prisma.kb_feedbackUpdateManyWithoutUsersNestedInput
@@ -1297,6 +1609,8 @@ export type usersUncheckedUpdateWithoutTicket_messagesInput = {
   locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kb_articles_kb_articles_created_byTousers?: Prisma.kb_articlesUncheckedUpdateManyWithoutUsers_kb_articles_created_byTousersNestedInput
+  kb_articles_kb_articles_reviewed_byTousers?: Prisma.kb_articlesUncheckedUpdateManyWithoutUsers_kb_articles_reviewed_byTousersNestedInput
   kb_comments?: Prisma.kb_commentsUncheckedUpdateManyWithoutUsersNestedInput
   kb_deflections?: Prisma.kb_deflectionsUncheckedUpdateManyWithoutUsersNestedInput
   kb_feedback?: Prisma.kb_feedbackUncheckedUpdateManyWithoutUsersNestedInput
@@ -1318,6 +1632,8 @@ export type usersCreateWithoutTickets_tickets_assignee_idTousersInput = {
   locked_until?: Date | string | null
   last_login_at?: Date | string | null
   created_at?: Date | string
+  kb_articles_kb_articles_created_byTousers?: Prisma.kb_articlesCreateNestedManyWithoutUsers_kb_articles_created_byTousersInput
+  kb_articles_kb_articles_reviewed_byTousers?: Prisma.kb_articlesCreateNestedManyWithoutUsers_kb_articles_reviewed_byTousersInput
   kb_comments?: Prisma.kb_commentsCreateNestedManyWithoutUsersInput
   kb_deflections?: Prisma.kb_deflectionsCreateNestedManyWithoutUsersInput
   kb_feedback?: Prisma.kb_feedbackCreateNestedManyWithoutUsersInput
@@ -1340,6 +1656,8 @@ export type usersUncheckedCreateWithoutTickets_tickets_assignee_idTousersInput =
   locked_until?: Date | string | null
   last_login_at?: Date | string | null
   created_at?: Date | string
+  kb_articles_kb_articles_created_byTousers?: Prisma.kb_articlesUncheckedCreateNestedManyWithoutUsers_kb_articles_created_byTousersInput
+  kb_articles_kb_articles_reviewed_byTousers?: Prisma.kb_articlesUncheckedCreateNestedManyWithoutUsers_kb_articles_reviewed_byTousersInput
   kb_comments?: Prisma.kb_commentsUncheckedCreateNestedManyWithoutUsersInput
   kb_deflections?: Prisma.kb_deflectionsUncheckedCreateNestedManyWithoutUsersInput
   kb_feedback?: Prisma.kb_feedbackUncheckedCreateNestedManyWithoutUsersInput
@@ -1366,6 +1684,8 @@ export type usersCreateWithoutTickets_tickets_reporter_idTousersInput = {
   locked_until?: Date | string | null
   last_login_at?: Date | string | null
   created_at?: Date | string
+  kb_articles_kb_articles_created_byTousers?: Prisma.kb_articlesCreateNestedManyWithoutUsers_kb_articles_created_byTousersInput
+  kb_articles_kb_articles_reviewed_byTousers?: Prisma.kb_articlesCreateNestedManyWithoutUsers_kb_articles_reviewed_byTousersInput
   kb_comments?: Prisma.kb_commentsCreateNestedManyWithoutUsersInput
   kb_deflections?: Prisma.kb_deflectionsCreateNestedManyWithoutUsersInput
   kb_feedback?: Prisma.kb_feedbackCreateNestedManyWithoutUsersInput
@@ -1388,6 +1708,8 @@ export type usersUncheckedCreateWithoutTickets_tickets_reporter_idTousersInput =
   locked_until?: Date | string | null
   last_login_at?: Date | string | null
   created_at?: Date | string
+  kb_articles_kb_articles_created_byTousers?: Prisma.kb_articlesUncheckedCreateNestedManyWithoutUsers_kb_articles_created_byTousersInput
+  kb_articles_kb_articles_reviewed_byTousers?: Prisma.kb_articlesUncheckedCreateNestedManyWithoutUsers_kb_articles_reviewed_byTousersInput
   kb_comments?: Prisma.kb_commentsUncheckedCreateNestedManyWithoutUsersInput
   kb_deflections?: Prisma.kb_deflectionsUncheckedCreateNestedManyWithoutUsersInput
   kb_feedback?: Prisma.kb_feedbackUncheckedCreateNestedManyWithoutUsersInput
@@ -1425,6 +1747,8 @@ export type usersUpdateWithoutTickets_tickets_assignee_idTousersInput = {
   locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kb_articles_kb_articles_created_byTousers?: Prisma.kb_articlesUpdateManyWithoutUsers_kb_articles_created_byTousersNestedInput
+  kb_articles_kb_articles_reviewed_byTousers?: Prisma.kb_articlesUpdateManyWithoutUsers_kb_articles_reviewed_byTousersNestedInput
   kb_comments?: Prisma.kb_commentsUpdateManyWithoutUsersNestedInput
   kb_deflections?: Prisma.kb_deflectionsUpdateManyWithoutUsersNestedInput
   kb_feedback?: Prisma.kb_feedbackUpdateManyWithoutUsersNestedInput
@@ -1447,6 +1771,8 @@ export type usersUncheckedUpdateWithoutTickets_tickets_assignee_idTousersInput =
   locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kb_articles_kb_articles_created_byTousers?: Prisma.kb_articlesUncheckedUpdateManyWithoutUsers_kb_articles_created_byTousersNestedInput
+  kb_articles_kb_articles_reviewed_byTousers?: Prisma.kb_articlesUncheckedUpdateManyWithoutUsers_kb_articles_reviewed_byTousersNestedInput
   kb_comments?: Prisma.kb_commentsUncheckedUpdateManyWithoutUsersNestedInput
   kb_deflections?: Prisma.kb_deflectionsUncheckedUpdateManyWithoutUsersNestedInput
   kb_feedback?: Prisma.kb_feedbackUncheckedUpdateManyWithoutUsersNestedInput
@@ -1479,6 +1805,8 @@ export type usersUpdateWithoutTickets_tickets_reporter_idTousersInput = {
   locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kb_articles_kb_articles_created_byTousers?: Prisma.kb_articlesUpdateManyWithoutUsers_kb_articles_created_byTousersNestedInput
+  kb_articles_kb_articles_reviewed_byTousers?: Prisma.kb_articlesUpdateManyWithoutUsers_kb_articles_reviewed_byTousersNestedInput
   kb_comments?: Prisma.kb_commentsUpdateManyWithoutUsersNestedInput
   kb_deflections?: Prisma.kb_deflectionsUpdateManyWithoutUsersNestedInput
   kb_feedback?: Prisma.kb_feedbackUpdateManyWithoutUsersNestedInput
@@ -1501,6 +1829,8 @@ export type usersUncheckedUpdateWithoutTickets_tickets_reporter_idTousersInput =
   locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kb_articles_kb_articles_created_byTousers?: Prisma.kb_articlesUncheckedUpdateManyWithoutUsers_kb_articles_created_byTousersNestedInput
+  kb_articles_kb_articles_reviewed_byTousers?: Prisma.kb_articlesUncheckedUpdateManyWithoutUsers_kb_articles_reviewed_byTousersNestedInput
   kb_comments?: Prisma.kb_commentsUncheckedUpdateManyWithoutUsersNestedInput
   kb_deflections?: Prisma.kb_deflectionsUncheckedUpdateManyWithoutUsersNestedInput
   kb_feedback?: Prisma.kb_feedbackUncheckedUpdateManyWithoutUsersNestedInput
@@ -1516,6 +1846,8 @@ export type usersUncheckedUpdateWithoutTickets_tickets_reporter_idTousersInput =
  */
 
 export type UsersCountOutputType = {
+  kb_articles_kb_articles_created_byTousers: number
+  kb_articles_kb_articles_reviewed_byTousers: number
   kb_comments: number
   kb_deflections: number
   kb_feedback: number
@@ -1527,6 +1859,8 @@ export type UsersCountOutputType = {
 }
 
 export type UsersCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  kb_articles_kb_articles_created_byTousers?: boolean | UsersCountOutputTypeCountKb_articles_kb_articles_created_byTousersArgs
+  kb_articles_kb_articles_reviewed_byTousers?: boolean | UsersCountOutputTypeCountKb_articles_kb_articles_reviewed_byTousersArgs
   kb_comments?: boolean | UsersCountOutputTypeCountKb_commentsArgs
   kb_deflections?: boolean | UsersCountOutputTypeCountKb_deflectionsArgs
   kb_feedback?: boolean | UsersCountOutputTypeCountKb_feedbackArgs
@@ -1545,6 +1879,20 @@ export type UsersCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extens
    * Select specific fields to fetch from the UsersCountOutputType
    */
   select?: Prisma.UsersCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * UsersCountOutputType without action
+ */
+export type UsersCountOutputTypeCountKb_articles_kb_articles_created_byTousersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.kb_articlesWhereInput
+}
+
+/**
+ * UsersCountOutputType without action
+ */
+export type UsersCountOutputTypeCountKb_articles_kb_articles_reviewed_byTousersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.kb_articlesWhereInput
 }
 
 /**
@@ -1617,6 +1965,8 @@ export type usersSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   locked_until?: boolean
   last_login_at?: boolean
   created_at?: boolean
+  kb_articles_kb_articles_created_byTousers?: boolean | Prisma.users$kb_articles_kb_articles_created_byTousersArgs<ExtArgs>
+  kb_articles_kb_articles_reviewed_byTousers?: boolean | Prisma.users$kb_articles_kb_articles_reviewed_byTousersArgs<ExtArgs>
   kb_comments?: boolean | Prisma.users$kb_commentsArgs<ExtArgs>
   kb_deflections?: boolean | Prisma.users$kb_deflectionsArgs<ExtArgs>
   kb_feedback?: boolean | Prisma.users$kb_feedbackArgs<ExtArgs>
@@ -1675,6 +2025,8 @@ export type usersSelectScalar = {
 
 export type usersOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "employee_code" | "name" | "username" | "email" | "pwd_hash" | "role" | "title" | "failed_login_attempts" | "locked_until" | "last_login_at" | "created_at", ExtArgs["result"]["users"]>
 export type usersInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  kb_articles_kb_articles_created_byTousers?: boolean | Prisma.users$kb_articles_kb_articles_created_byTousersArgs<ExtArgs>
+  kb_articles_kb_articles_reviewed_byTousers?: boolean | Prisma.users$kb_articles_kb_articles_reviewed_byTousersArgs<ExtArgs>
   kb_comments?: boolean | Prisma.users$kb_commentsArgs<ExtArgs>
   kb_deflections?: boolean | Prisma.users$kb_deflectionsArgs<ExtArgs>
   kb_feedback?: boolean | Prisma.users$kb_feedbackArgs<ExtArgs>
@@ -1691,6 +2043,8 @@ export type usersIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
 export type $usersPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "users"
   objects: {
+    kb_articles_kb_articles_created_byTousers: Prisma.$kb_articlesPayload<ExtArgs>[]
+    kb_articles_kb_articles_reviewed_byTousers: Prisma.$kb_articlesPayload<ExtArgs>[]
     kb_comments: Prisma.$kb_commentsPayload<ExtArgs>[]
     kb_deflections: Prisma.$kb_deflectionsPayload<ExtArgs>[]
     kb_feedback: Prisma.$kb_feedbackPayload<ExtArgs>[]
@@ -2107,6 +2461,8 @@ readonly fields: usersFieldRefs;
  */
 export interface Prisma__usersClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  kb_articles_kb_articles_created_byTousers<T extends Prisma.users$kb_articles_kb_articles_created_byTousersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.users$kb_articles_kb_articles_created_byTousersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$kb_articlesPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  kb_articles_kb_articles_reviewed_byTousers<T extends Prisma.users$kb_articles_kb_articles_reviewed_byTousersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.users$kb_articles_kb_articles_reviewed_byTousersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$kb_articlesPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   kb_comments<T extends Prisma.users$kb_commentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.users$kb_commentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$kb_commentsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   kb_deflections<T extends Prisma.users$kb_deflectionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.users$kb_deflectionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$kb_deflectionsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   kb_feedback<T extends Prisma.users$kb_feedbackArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.users$kb_feedbackArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$kb_feedbackPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -2541,6 +2897,54 @@ export type usersDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
    * Limit how many users to delete.
    */
   limit?: number
+}
+
+/**
+ * users.kb_articles_kb_articles_created_byTousers
+ */
+export type users$kb_articles_kb_articles_created_byTousersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the kb_articles
+   */
+  select?: Prisma.kb_articlesSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the kb_articles
+   */
+  omit?: Prisma.kb_articlesOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.kb_articlesInclude<ExtArgs> | null
+  where?: Prisma.kb_articlesWhereInput
+  orderBy?: Prisma.kb_articlesOrderByWithRelationInput | Prisma.kb_articlesOrderByWithRelationInput[]
+  cursor?: Prisma.kb_articlesWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.Kb_articlesScalarFieldEnum | Prisma.Kb_articlesScalarFieldEnum[]
+}
+
+/**
+ * users.kb_articles_kb_articles_reviewed_byTousers
+ */
+export type users$kb_articles_kb_articles_reviewed_byTousersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the kb_articles
+   */
+  select?: Prisma.kb_articlesSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the kb_articles
+   */
+  omit?: Prisma.kb_articlesOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.kb_articlesInclude<ExtArgs> | null
+  where?: Prisma.kb_articlesWhereInput
+  orderBy?: Prisma.kb_articlesOrderByWithRelationInput | Prisma.kb_articlesOrderByWithRelationInput[]
+  cursor?: Prisma.kb_articlesWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.Kb_articlesScalarFieldEnum | Prisma.Kb_articlesScalarFieldEnum[]
 }
 
 /**

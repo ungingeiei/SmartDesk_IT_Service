@@ -30,6 +30,15 @@ export const ticket_status_enum = {
 export type ticket_status_enum = (typeof ticket_status_enum)[keyof typeof ticket_status_enum]
 
 
+export const kb_status_enum = {
+  pending: 'pending',
+  approved: 'approved',
+  rejected: 'rejected'
+} as const
+
+export type kb_status_enum = (typeof kb_status_enum)[keyof typeof kb_status_enum]
+
+
 export const user_role_enum = {
   employee: 'employee',
   agent: 'agent',

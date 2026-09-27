@@ -16,6 +16,9 @@ CREATE TYPE "ticket_status_enum" AS ENUM ('new', 'in_progress', 'pending', 'reso
 
 CREATE TYPE "ticket_priority_enum" AS ENUM ('critical', 'high', 'medium', 'low');
 
+-- KB article review state; see 04_kb_approval.sql
+CREATE TYPE "kb_status_enum" AS ENUM ('pending', 'approved', 'rejected');
+
 
 -- Categories of IT issue (network, accounts, devices, email, software, storage)
 
@@ -113,6 +116,10 @@ CREATE TABLE IF NOT EXISTS "kb_articles" (
 	"source_ticket_id" INTEGER UNIQUE,
 	"created_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
 	"updated_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+	"status" kb_status_enum NOT NULL DEFAULT 'pending',
+	"created_by" INTEGER,
+	"reviewed_by" INTEGER,
+	"reviewed_at" TIMESTAMPTZ,
 	PRIMARY KEY("id")
 );
 
@@ -256,6 +263,16 @@ ON DELETE NO ACTION ON UPDATE NO ACTION;
 ALTER TABLE "kb_articles"
 ADD FOREIGN KEY("source_ticket_id") REFERENCES "tickets"("id")
 ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+ALTER TABLE "kb_articles"
+ADD CONSTRAINT "kb_articles_created_by_fkey" FOREIGN KEY("created_by") REFERENCES "users"("id")
+ON DELETE SET NULL ON UPDATE NO ACTION;
+
+ALTER TABLE "kb_articles"
+ADD CONSTRAINT "kb_articles_reviewed_by_fkey" FOREIGN KEY("reviewed_by") REFERENCES "users"("id")
+ON DELETE SET NULL ON UPDATE NO ACTION;
+
+CREATE INDEX "kb_articles_status_idx" ON "kb_articles"("status");
 
 ALTER TABLE "kb_steps"
 ADD FOREIGN KEY("kb_id") REFERENCES "kb_articles"("id")
