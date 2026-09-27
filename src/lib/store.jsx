@@ -5,22 +5,53 @@
 // search boxes, form fields and filters stay local to their page.
 
 import { createContext, useCallback, useContext, useMemo, useReducer, useRef } from 'react';
-import { ASSIGNEES, USERS, defaultKB, defaultTickets } from './data';
+import { ASSIGNEES, USERS } from './data';
 import { usernameFromCode } from './users';
-import { calcPriority, formatThaiDateTime, formatThaiTime, guessAiSuggestion, guessCategory } from './logic';
+import { formatThaiTime } from './logic';
 
 const AppContext = createContext(null);
 
 const initialState = {
   currentUser: null,
   users: USERS.map((u) => ({ ...u })),
-  kb: defaultKB(),
-  tickets: defaultTickets(),
-  ticketCounter: 102,
+  // Populated from the Prisma-backed APIs (see loadKB/loadTickets below) once
+  // someone logs in — no longer seeded from the src/lib/data.js mock arrays.
+  kb: [],
+  tickets: [],
   deflectedCount: 132,
   fbChoice: {},
   toastMsg: null,
 };
+
+async function postJSON(url, body) {
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body ?? {}),
+  });
+  const data = await res.json().catch(() => ({}));
+  return { ok: res.ok, data };
+}
+
+/** คลังความรู้ — same list for every role, so this always runs after login. */
+async function loadKB(dispatch) {
+  const { ok, data } = await postJSON('/api/kb');
+  if (ok) dispatch({ type: 'setKB', kb: data.articles });
+}
+
+/**
+ * ticket ของฉัน (employee) or คิวงาน / ticket ทั้งหมด (agent, admin) — which
+ * endpoint depends on the signed-in role, same as the read-only tab each role
+ * gets in src/lib/data.js's NAV.
+ */
+async function loadTickets(dispatch, user) {
+  const isEmployee = user.role === 'employee';
+  const { ok, data } = await postJSON(
+    isEmployee ? '/api/tickets/mine' : '/api/tickets/queue',
+    isEmployee ? { reporterId: user.id } : undefined,
+  );
+  if (ok) dispatch({ type: 'setTickets', tickets: data.tickets });
+}
 
 /** Apply `patch` to one ticket, leaving the rest of the list untouched. */
 function patchTicket(tickets, id, patch) {
@@ -41,6 +72,12 @@ function reducer(state, action) {
 
     case 'toast':
       return { ...state, toastMsg: action.msg };
+
+    case 'setKB':
+      return { ...state, kb: action.kb };
+
+    case 'setTickets':
+      return { ...state, tickets: action.tickets };
 
     case 'addUser':
       return { ...state, users: [...state.users, action.user] };
@@ -84,11 +121,7 @@ function reducer(state, action) {
       };
 
     case 'addTicket':
-      return {
-        ...state,
-        tickets: [action.ticket, ...state.tickets],
-        ticketCounter: state.ticketCounter + 1,
-      };
+      return { ...state, tickets: [action.ticket, ...state.tickets] };
 
     case 'patchTicket':
       return { ...state, tickets: patchTicket(state.tickets, action.id, action.patch) };
@@ -120,8 +153,16 @@ export function AppProvider({ children }) {
     });
 
     return {
-      /** `user` is whatever /api/auth/login returned — no pwd_hash included. */
-      login: (user) => dispatch({ type: 'login', user }),
+      /**
+       * `user` is whatever /api/auth/login returned — no pwd_hash included.
+       * Signing in immediately queries the real KB + ticket data for this
+       * role via Prisma, replacing what used to be the mock seed.
+       */
+      login: (user) => {
+        dispatch({ type: 'login', user });
+        loadKB(dispatch);
+        loadTickets(dispatch, user);
+      },
 
       logout: () => {
         showToast('ออกจากระบบเรียบร้อยแล้ว');
@@ -194,36 +235,26 @@ export function AppProvider({ children }) {
         showToast('ทำเครื่องหมายคำตอบนี้ว่าดีที่สุดแล้ว');
       },
 
-      /** Returns the new ticket id so the wizard can show its confirmation. */
-      submitTicket: ({ kb, user, counter, title, desc, impact, urgency }) => {
-        const now = new Date();
-        const id = `TK-${counter}`;
-        dispatch({
-          type: 'addTicket',
-          ticket: {
-            id,
-            title: title.trim(),
-            desc: desc.trim(),
-            impact,
-            urgency,
-            priority: calcPriority(impact, urgency),
-            status: 'new',
-            cat: guessCategory(kb, `${title} ${desc}`),
-            created: formatThaiDateTime(now),
-            createdAt: now.getTime(),
-            reporter: user.name,
-            assignee: null,
-            chat: [],
-            internalNotes: [],
-            resolutionSummary: null,
-            resolvedAt: null,
-            csat: null,
-            confirmed: false,
-            reopenedCount: 0,
-            aiSuggestion: guessAiSuggestion(kb, title, desc),
-          },
+      /**
+       * Files the ticket via POST /api/tickets/report (priority, category and
+       * the AI-suggestion guess are all computed server-side from the real
+       * DB). Returns the new ticket's id so the wizard can show its
+       * confirmation screen, or null if the request failed.
+       */
+      submitTicket: async ({ user, title, desc, impact, urgency }) => {
+        const { ok, data } = await postJSON('/api/tickets/report', {
+          title,
+          desc,
+          impact,
+          urgency,
+          reporterId: user.id,
         });
-        return id;
+        if (!ok) {
+          showToast(data.error || 'แจ้งปัญหาไม่สำเร็จ กรุณาลองใหม่');
+          return null;
+        }
+        dispatch({ type: 'addTicket', ticket: data.ticket });
+        return data.ticket.id;
       },
 
       claimTicket: (id, user, message) => {
