@@ -12,7 +12,15 @@ import { KB_ARTICLE_INCLUDE, mapKbArticle } from '@/lib/serialize';
 // unused, so an empty `{}` is fine.
 export async function POST(req) {
   await req.json().catch(() => ({}));
+  return listArticles();
+}
 
+// GET — what store.jsx actually calls (`fetch('/api/kb')`) when loading the KB.
+export async function GET() {
+  return listArticles();
+}
+
+async function listArticles() {
   const rows = await prisma.kb_articles.findMany({
     include: KB_ARTICLE_INCLUDE,
     orderBy: { updated_at: 'desc' },
