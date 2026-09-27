@@ -2,7 +2,7 @@
 
 // Username/password login against the real users table via /api/auth/login.
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { homeHrefForRole } from '@/lib/nav';
 import { useApp } from '@/lib/store';
@@ -11,13 +11,21 @@ import { Field, TextInput } from '@/components/ui/Field';
 import ForgotPasswordModal from './ForgotPasswordModal';
 
 export default function LoginForm() {
-  const { login } = useApp();
+  const { currentUser, authReady, login } = useApp();
   const router = useRouter();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [forgotOpen, setForgotOpen] = useState(false);
+
+  // A session restored from localStorage means this visitor is already
+  // signed in — skip the form and send them straight to their home page.
+  useEffect(() => {
+    if (authReady && currentUser) {
+      router.replace(homeHrefForRole(currentUser.role));
+    }
+  }, [authReady, currentUser, router]);
 
   async function handleSubmit(e) {
     e.preventDefault();

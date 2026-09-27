@@ -70,14 +70,18 @@ export function guessAiSuggestion(kb, title, desc) {
   };
 }
 
-/** "12 ก.ย. 2569 08:40" — the format the seeded tickets use. */
-export function formatThaiDateTime(date) {
-  const d = date.toLocaleDateString('th-TH', {
+/** "2 ก.ย. 2569" — the format KB articles and comments show a date in. */
+export function formatThaiDate(date) {
+  return date.toLocaleDateString('th-TH', {
     day: 'numeric',
     month: 'short',
     year: 'numeric',
   });
-  return `${d} ${formatThaiTime(date)}`;
+}
+
+/** "12 ก.ย. 2569 08:40" — the format the seeded tickets use. */
+export function formatThaiDateTime(date) {
+  return `${formatThaiDate(date)} ${formatThaiTime(date)}`;
 }
 
 export function formatThaiTime(date) {

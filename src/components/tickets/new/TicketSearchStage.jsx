@@ -15,7 +15,7 @@ import { SearchIcon } from '@/components/icons';
  * Opening a result counts as a deflection, which feeds the admin dashboard.
  */
 export default function TicketSearchStage({ query, onQueryChange, onOpenForm }) {
-  const { kb, incrementDeflected } = useApp();
+  const { kb, currentUser, incrementDeflected } = useApp();
 
   const trimmed = query.trim();
   const results = trimmed ? matchKB(kb, trimmed, []) : [];
@@ -65,7 +65,7 @@ export default function TicketSearchStage({ query, onQueryChange, onOpenForm }) 
                     article={article}
                     query={trimmed}
                     compact
-                    onClick={incrementDeflected}
+                    onClick={() => incrementDeflected(article.id, currentUser)}
                   />
                 ))}
               </div>

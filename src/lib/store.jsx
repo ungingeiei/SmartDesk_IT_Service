@@ -4,15 +4,21 @@
 // lives here. Only state that must survive a route change belongs in this store —
 // search boxes, form fields and filters stay local to their page.
 
-import { createContext, useCallback, useContext, useMemo, useReducer, useRef } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef } from 'react';
 import { ASSIGNEES, USERS, defaultKB, defaultTickets } from './data';
-import { usernameFromCode } from './users';
 import { calcPriority, formatThaiDateTime, formatThaiTime, guessAiSuggestion, guessCategory } from './logic';
 
 const AppContext = createContext(null);
 
+// Key the session is cached under in localStorage, so a page refresh doesn't
+// bounce a signed-in user back to the login screen.
+const SESSION_KEY = 'smartdesk.currentUser';
+
 const initialState = {
   currentUser: null,
+  // False until the localStorage check below has run once — RequireAuth must
+  // not redirect to /login before it knows whether a session was restored.
+  authReady: false,
   users: USERS.map((u) => ({ ...u })),
   kb: defaultKB(),
   tickets: defaultTickets(),
@@ -39,22 +45,29 @@ function reducer(state, action) {
     case 'logout':
       return { ...state, currentUser: null };
 
+    // Fired once on mount after checking localStorage for a saved session —
+    // action.user is the restored user, or null if there wasn't one.
+    case 'authReady':
+      return { ...state, currentUser: action.user, authReady: true };
+
+    // Replaces the mock tickets/kb/users with what /api/tickets, /api/kb and
+    // /api/users returned, once they've loaded from the real database.
+    case 'hydrate':
+      return { ...state, ...action.payload };
+
     case 'toast':
       return { ...state, toastMsg: action.msg };
 
     case 'addUser':
       return { ...state, users: [...state.users, action.user] };
 
-    case 'patchUsers': {
-      // The signed-in admin can never change their own role or lock themselves out.
-      const selfCode = state.currentUser?.code;
+    // action.users is one or more full user rows straight back from the API
+    // (PATCH /api/users/[code]) — replace each matching local row with it.
+    case 'updateUsers': {
+      const byCode = new Map(action.users.map((u) => [u.code, u]));
       return {
         ...state,
-        users: state.users.map((u) => {
-          if (!action.codes.includes(u.code)) return u;
-          const patch = u.code === selfCode ? { ...action.patch, role: u.role, status: u.status } : action.patch;
-          return { ...u, ...patch };
-        }),
+        users: state.users.map((u) => byCode.get(u.code) ?? u),
       };
     }
 
@@ -79,7 +92,7 @@ function reducer(state, action) {
       return {
         ...state,
         kb: patchArticle(state.kb, action.articleId, (a) => ({
-          comments: a.comments.map((c, i) => ({ ...c, accepted: i === action.index })),
+          comments: a.comments.map((c) => ({ ...c, accepted: c.id === action.commentId })),
         })),
       };
 
@@ -105,6 +118,55 @@ export function AppProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const toastTimer = useRef(null);
 
+  // Restores the signed-in user from localStorage once per app load, so a
+  // page refresh doesn't bounce the user back to the login screen.
+  useEffect(() => {
+    let storedUser = null;
+    try {
+      const raw = localStorage.getItem(SESSION_KEY);
+      if (raw) storedUser = JSON.parse(raw);
+    } catch {
+      storedUser = null;
+    }
+    dispatch({ type: 'authReady', user: storedUser });
+  }, []);
+
+  // Once signed in, swap the mock tickets/kb/users for what's actually in the
+  // database. Falls back to silently keeping the mock data if the fetch fails.
+  useEffect(() => {
+    if (!state.currentUser) return;
+    let cancelled = false;
+
+    async function hydrate() {
+      try {
+        const [tickets, kb, users, deflections] = await Promise.all([
+          fetch('/api/tickets').then((r) => r.json()),
+          fetch('/api/kb').then((r) => r.json()),
+          fetch('/api/users').then((r) => r.json()),
+          fetch('/api/kb-deflections').then((r) => r.json()),
+        ]);
+        if (cancelled) return;
+
+        const ticketCounter = tickets.reduce((max, t) => {
+          const n = Number(String(t.id).replace(/\D/g, ''));
+          return Number.isFinite(n) ? Math.max(max, n + 1) : max;
+        }, 102);
+
+        dispatch({
+          type: 'hydrate',
+          payload: { tickets, kb, users, ticketCounter, deflectedCount: deflections.count },
+        });
+      } catch (err) {
+        console.error('Failed to load data from the database, keeping demo data.', err);
+      }
+    }
+
+    hydrate();
+    return () => {
+      cancelled = true;
+    };
+  }, [state.currentUser]);
+
   const showToast = useCallback((msg) => {
     dispatch({ type: 'toast', msg });
     clearTimeout(toastTimer.current);
@@ -121,76 +183,156 @@ export function AppProvider({ children }) {
 
     return {
       /** `user` is whatever /api/auth/login returned — no pwd_hash included. */
-      login: (user) => dispatch({ type: 'login', user }),
+      login: (user) => {
+        try {
+          localStorage.setItem(SESSION_KEY, JSON.stringify(user));
+        } catch {
+          // Private browsing / storage disabled — session just won't survive a refresh.
+        }
+        dispatch({ type: 'login', user });
+      },
 
       logout: () => {
+        try {
+          localStorage.removeItem(SESSION_KEY);
+        } catch {
+          // Nothing to clean up if storage was never written.
+        }
         showToast('ออกจากระบบเรียบร้อยแล้ว');
         dispatch({ type: 'logout' });
       },
 
-      addUser: ({ code, name, email, title, role }) => {
-        dispatch({
-          type: 'addUser',
-          user: {
-            code: code.trim(),
-            name: name.trim(),
-            username: usernameFromCode(code),
-            email: email.trim().toLowerCase(),
-            title: title.trim(),
-            role,
-            status: 'active',
-          },
+      /** Persists via POST /api/users, then adds the real row (with its DB id) to state. */
+      addUser: async ({ code, name, email, title, role, password }) => {
+        const res = await fetch('/api/users', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code, name, email, title, role, password }),
         });
-        showToast(`เพิ่มผู้ใช้ ${name.trim()} เรียบร้อยแล้ว`);
+        const data = await res.json();
+
+        if (!res.ok) {
+          showToast(data.error || 'เพิ่มผู้ใช้ไม่สำเร็จ');
+          throw new Error(data.error || 'เพิ่มผู้ใช้ไม่สำเร็จ');
+        }
+
+        dispatch({ type: 'addUser', user: data });
+        showToast(`เพิ่มผู้ใช้ ${data.name} เรียบร้อยแล้ว`);
       },
 
-      updateUser: (code, patch) => {
-        dispatch({ type: 'patchUsers', codes: [code], patch });
+      /** Persists via PATCH /api/users/[code] — patch can include name/email/title/role/status. */
+      updateUser: async (code, patch) => {
+        const res = await fetch(`/api/users/${encodeURIComponent(code)}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(patch),
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          showToast(data.error || 'บันทึกข้อมูลผู้ใช้ไม่สำเร็จ');
+          throw new Error(data.error || 'บันทึกข้อมูลผู้ใช้ไม่สำเร็จ');
+        }
+
+        dispatch({ type: 'updateUsers', users: [data] });
         showToast('บันทึกข้อมูลผู้ใช้เรียบร้อยแล้ว');
       },
 
-      setUsersStatus: (codes, status) => {
-        dispatch({ type: 'patchUsers', codes, patch: { status } });
-        showToast(status === 'locked' ? `ล็อกบัญชี ${codes.length} รายการแล้ว` : `ปลดล็อกบัญชี ${codes.length} รายการแล้ว`);
+      setUsersStatus: async (codes, status) => {
+        const results = await Promise.all(
+          codes.map((code) =>
+            fetch(`/api/users/${encodeURIComponent(code)}`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ status }),
+            }).then((r) => r.json()),
+          ),
+        );
+        dispatch({ type: 'updateUsers', users: results });
+        showToast(
+          status === 'locked'
+            ? `ล็อกบัญชี ${codes.length} รายการแล้ว`
+            : `ปลดล็อกบัญชี ${codes.length} รายการแล้ว`,
+        );
       },
 
-      /**
-       * Frontend stub: the password itself is deliberately not kept in state. The real
-       * implementation must send it to the API, which hashes it before it reaches `pwd_hash`.
-       */
-      resetPassword: (user) => showToast(`ตั้งรหัสผ่านใหม่ให้ ${user.name} เรียบร้อยแล้ว`),
+      /** Admin-initiated reset — reuses the same endpoint the "forgot password" flow calls. */
+      resetPassword: async (user, password) => {
+        const res = await fetch('/api/auth/reset-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: user.username, newPassword: password }),
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          showToast(data.error || 'ตั้งรหัสผ่านใหม่ไม่สำเร็จ');
+          throw new Error(data.error || 'ตั้งรหัสผ่านใหม่ไม่สำเร็จ');
+        }
+
+        showToast(`ตั้งรหัสผ่านใหม่ให้ ${user.name} เรียบร้อยแล้ว`);
+      },
 
       setFeedback: (articleId, choice) => dispatch({ type: 'setFeedback', articleId, choice }),
 
-      incrementDeflected: () => dispatch({ type: 'incrementDeflected' }),
+      /** Persists via POST /api/kb-deflections; increments immediately, doesn't wait on it. */
+      incrementDeflected: (kbId, user) => {
+        dispatch({ type: 'incrementDeflected' });
+        fetch('/api/kb-deflections', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ kbId, userId: user?.id }),
+        }).catch((err) => console.error('Failed to record deflection', err));
+      },
 
-      addArticle: ({ title, cat, step }) => {
-        dispatch({
-          type: 'addArticle',
-          article: {
-            id: 'kb' + Date.now(),
-            cat,
-            title,
-            summary: step.slice(0, 60),
-            updated: 'วันนี้',
-            views: 0,
-            tags: [title.toLowerCase()],
-            steps: [step],
-            comments: [],
-          },
+      /** Persists to the database via POST /api/kb, then adds the real row to state. */
+      addArticle: async ({ title, cat, step }) => {
+        const res = await fetch('/api/kb', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, cat, step }),
         });
+        const data = await res.json();
+
+        if (!res.ok) {
+          showToast(data.error || 'เพิ่มบทความไม่สำเร็จ');
+          throw new Error(data.error || 'เพิ่มบทความไม่สำเร็จ');
+        }
+
+        dispatch({ type: 'addArticle', article: data });
         showToast('เพิ่มบทความเรียบร้อยแล้ว');
       },
 
-      addComment: (articleId, user, txt) =>
-        dispatch({
-          type: 'addComment',
-          articleId,
-          comment: { who: user.name, when: 'วันนี้', txt, votes: 0, accepted: false },
-        }),
+      /** Persists via POST /api/kb/[id]/comments, then adds the real row to state. */
+      addComment: async (articleId, user, txt) => {
+        const res = await fetch(`/api/kb/${articleId}/comments`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: user.id, authorName: user.name, comment: txt }),
+        });
+        const data = await res.json();
 
-      acceptComment: (articleId, index) => {
-        dispatch({ type: 'acceptComment', articleId, index });
+        if (!res.ok) {
+          showToast(data.error || 'ส่งความคิดเห็นไม่สำเร็จ');
+          throw new Error(data.error || 'ส่งความคิดเห็นไม่สำเร็จ');
+        }
+
+        dispatch({ type: 'addComment', articleId, comment: data });
+      },
+
+      acceptComment: async (articleId, commentId) => {
+        const res = await fetch(`/api/kb/${articleId}/comments/${commentId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ accepted: true }),
+        });
+
+        if (!res.ok) {
+          showToast('ทำเครื่องหมายคำตอบไม่สำเร็จ');
+          return;
+        }
+
+        dispatch({ type: 'acceptComment', articleId, commentId });
         showToast('ทำเครื่องหมายคำตอบนี้ว่าดีที่สุดแล้ว');
       },
 

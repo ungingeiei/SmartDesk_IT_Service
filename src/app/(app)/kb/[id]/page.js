@@ -75,7 +75,7 @@ export default function ArticlePage({ params }) {
 
         <CommentList
           comments={article.comments}
-          onAccept={(index) => acceptComment(article.id, index)}
+          onAccept={(commentId) => acceptComment(article.id, commentId)}
           onSend={(txt) => addComment(article.id, currentUser, txt)}
         />
       </Card>

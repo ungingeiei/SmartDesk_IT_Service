@@ -1,39 +1,49 @@
 import prisma from '@/lib/prisma'
 import { hashPassword } from '@/lib/auth'
+import { usernameFromCode } from '@/lib/users'
+import { USER_SAFE_SELECT, toUserDTO } from '@/lib/userDto'
 import { NextResponse } from 'next/server'
 
-const SAFE_SELECT = {
-    id: true,
-    employee_code: true,
-    name: true,
-    username: true,
-    email: true,
-    role: true,
-    title: true,
-    last_login_at: true,
-    created_at: true,
-}
-
 export async function GET() {
-    const users = await prisma.users.findMany({ select: SAFE_SELECT })
+    const users = await prisma.users.findMany({ select: USER_SAFE_SELECT })
 
     if (users.length === 0){
         return NextResponse.json({error: "Not found"}, {status: 404})
     }
-    return NextResponse.json(users)
+    return NextResponse.json(users.map(toUserDTO))
 }
 
-
+/** "เพิ่มผู้ใช้" — the admin user-management form's add flow. */
 export async function POST(req) {
-    const { username, newPassword } = await req.json();
+    const { code, name, email, title, role, password } = await req.json()
 
-    const user = await prisma.users.findUnique({ where: { username }, select: { id: true } })
-    if (!user) {
-        return NextResponse.json({error: "Not found"}, {status: 404})
+    if (!code?.trim() || !name?.trim() || !email?.trim() || !role || !password) {
+        return NextResponse.json({ error: 'กรุณากรอกข้อมูลให้ครบ' }, { status: 400 })
     }
 
-    const pwd_hash = await hashPassword(newPassword)
-    await prisma.users.update({ where: { id: user.id }, data: { pwd_hash } })
+    const pwd_hash = await hashPassword(password)
 
-    return NextResponse.json({message: "Success"}, {status: 200})
+    try {
+        const created = await prisma.users.create({
+            data: {
+                employee_code: code.trim(),
+                name: name.trim(),
+                username: usernameFromCode(code),
+                email: email.trim().toLowerCase(),
+                pwd_hash,
+                role,
+                title: title?.trim() || null,
+            },
+            select: USER_SAFE_SELECT,
+        })
+        return NextResponse.json(toUserDTO(created), { status: 201 })
+    } catch (err) {
+        if (err.code === 'P2002') {
+            return NextResponse.json(
+                { error: 'รหัสพนักงาน อีเมล หรือชื่อผู้ใช้นี้ถูกใช้งานแล้ว' },
+                { status: 409 },
+            )
+        }
+        throw err
+    }
 }

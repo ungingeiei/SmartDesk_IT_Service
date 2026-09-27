@@ -26,9 +26,13 @@ export default function KnowledgeBasePage() {
     setActiveCats((prev) => (prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]));
   }
 
-  function handleSave(article) {
-    addArticle(article);
-    setShowAddArticle(false);
+  async function handleSave(article) {
+    try {
+      await addArticle(article);
+      setShowAddArticle(false);
+    } catch {
+      // addArticle already showed a toast — keep the form open so nothing typed is lost.
+    }
   }
 
   return (
