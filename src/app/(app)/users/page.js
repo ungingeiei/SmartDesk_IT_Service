@@ -149,12 +149,16 @@ export default function UsersPage() {
         >
           <span className="text-md font-semibold text-indigo-dark">เลือกแล้ว {picked.length} คน</span>
           <div className="ml-auto flex flex-wrap gap-2">
-            <Button size="sm" variant="neutral" onClick={() => bulkStatus('locked')}>
-              ล็อกบัญชี
-            </Button>
-            <Button size="sm" variant="neutral" onClick={() => bulkStatus('active')}>
-              ปลดล็อก
-            </Button>
+            {picked.some((u) => u.status !== 'locked') ? (
+              <Button size="sm" variant="neutral" onClick={() => bulkStatus('locked')}>
+                ล็อกบัญชี
+              </Button>
+            ) : null}
+            {picked.some((u) => u.status === 'locked') ? (
+              <Button size="sm" variant="neutral" onClick={() => bulkStatus('active')}>
+                ปลดล็อก
+              </Button>
+            ) : null}
             <Button size="sm" variant="ghost" onClick={() => setSelected(new Set())}>
               ยกเลิกการเลือก
             </Button>
