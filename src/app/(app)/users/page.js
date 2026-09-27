@@ -183,9 +183,13 @@ export default function UsersPage() {
         <UserFormModal
           users={users}
           onClose={() => setDialog(null)}
-          onSubmit={(values) => {
-            addUser(values);
-            setDialog(null);
+          onSubmit={async (values) => {
+            try {
+              await addUser(values);
+              setDialog(null);
+            } catch {
+              // addUser already showed a toast — keep the form open so nothing typed is lost.
+            }
           }}
         />
       ) : null}
@@ -197,15 +201,19 @@ export default function UsersPage() {
           isSelf={target.code === currentUser.code}
           onClose={() => setDialog(null)}
           onResetPassword={() => setDialog({ mode: 'password', code: target.code })}
-          onSubmit={(values) => {
-            updateUser(target.code, {
-              name: values.name.trim(),
-              email: values.email.trim().toLowerCase(),
-              title: values.title.trim(),
-              role: values.role,
-              status: values.status,
-            });
-            setDialog(null);
+          onSubmit={async (values) => {
+            try {
+              await updateUser(target.code, {
+                name: values.name.trim(),
+                email: values.email.trim().toLowerCase(),
+                title: values.title.trim(),
+                role: values.role,
+                status: values.status,
+              });
+              setDialog(null);
+            } catch {
+              // updateUser already showed a toast — keep the form open so nothing typed is lost.
+            }
           }}
         />
       ) : null}
@@ -214,9 +222,13 @@ export default function UsersPage() {
         <ResetPasswordModal
           user={target}
           onClose={() => setDialog(null)}
-          onSubmit={() => {
-            resetPassword(target);
-            setDialog(null);
+          onSubmit={async (password) => {
+            try {
+              await resetPassword(target, password);
+              setDialog(null);
+            } catch {
+              // resetPassword already showed a toast — keep the form open to retry.
+            }
           }}
         />
       ) : null}

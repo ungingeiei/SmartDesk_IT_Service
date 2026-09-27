@@ -8,12 +8,13 @@ import { useApp } from '@/lib/store';
 /**
  * Client-side route guard.
  *
- * Auth is in-memory demo state, so this cannot run on the server: signed-out
- * visitors are sent to the login screen, and anyone opening a route their role
- * has no tab for (an employee typing /dashboard) is sent to their own home.
+ * Auth is in-memory demo state (restored from localStorage on load), so this
+ * cannot run on the server: signed-out visitors are sent to the login screen,
+ * and anyone opening a route their role has no tab for (an employee typing
+ * /dashboard) is sent to their own home.
  */
 export default function RequireAuth({ children }) {
-  const { currentUser } = useApp();
+  const { currentUser, authReady } = useApp();
   const pathname = usePathname();
   const router = useRouter();
 
@@ -21,13 +22,16 @@ export default function RequireAuth({ children }) {
   const allowed = currentUser && (!allowedRoles || allowedRoles.includes(currentUser.role));
 
   useEffect(() => {
+    // Don't redirect until the localStorage session check has actually run —
+    // otherwise every refresh bounces a signed-in user back to the login page.
+    if (!authReady) return;
     if (!currentUser) {
       router.replace('/');
     } else if (!allowed) {
       router.replace(homeHrefForRole(currentUser.role));
     }
-  }, [currentUser, allowed, router]);
+  }, [authReady, currentUser, allowed, router]);
 
-  if (!allowed) return null;
+  if (!authReady || !allowed) return null;
   return children;
 }
